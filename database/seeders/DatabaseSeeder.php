@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Team;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -17,7 +18,10 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+            'email' => 'admin@admin.com',
+        ])->each(function (User $user): void {
+            $user->teams()->saveMany(Team::factory(4)->make());
+        });
+
     }
 }
