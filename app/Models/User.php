@@ -11,10 +11,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Traits\HasRoles;
+
 class User extends Authenticatable implements HasTenants
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
