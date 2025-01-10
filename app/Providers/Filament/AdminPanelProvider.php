@@ -26,6 +26,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->tenant(Team::class)
+            ->topNavigation()
             ->id('admin')
             ->path('admin')
             ->login()
