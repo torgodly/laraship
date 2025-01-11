@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SiteResource\Pages;
 
+use App\Filament\Clusters\Site;
 use App\Filament\Resources\SiteResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;

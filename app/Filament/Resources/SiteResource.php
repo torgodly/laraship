@@ -49,19 +49,9 @@ class SiteResource extends Resource
                     Tables\Columns\TextColumn::make('deployed')
                         ->label('Deployed')
                 ],
-            )
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            );
     }
+
 
     public static function getRelations(): array
     {
@@ -69,6 +59,7 @@ class SiteResource extends Resource
             //
         ];
     }
+
 
     public static function getPages(): array
     {
