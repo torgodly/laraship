@@ -9,7 +9,7 @@ use Filament\Forms\Get;
 
 class UserForm
 {
-    public static function get()
+    public static function schema()
     {
         return [
             TextInput::make('name')

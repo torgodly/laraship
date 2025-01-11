@@ -6,7 +6,7 @@ use Filament\Tables\Columns\TextColumn;
 
 class UserTable
 {
-    public static function get()
+    public static function schema(): array
     {
         return [
             TextColumn::make('name')

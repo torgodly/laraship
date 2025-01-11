@@ -21,13 +21,13 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema(UserForm::get());
+            ->schema(UserForm::schema());
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(UserTable::get())
+            ->columns(UserTable::schema())
             ->filters([
                 //
             ])

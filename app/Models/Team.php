@@ -19,4 +19,10 @@ class Team extends Model
     {
         return $this->belongsToMany(User::class);
     }
+
+    public function sites(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Site::class);
+    }
+
 }
