@@ -13,7 +13,7 @@ class UserTable
                 ->searchable(),
             TextColumn::make('email')
                 ->searchable(),
-            TextColumn::make('roles')
+            TextColumn::make('teams.name')
                 ->badge()
                 ->searchable(),
         ];

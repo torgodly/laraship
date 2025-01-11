@@ -21,15 +21,15 @@ class UserForm
                 ->email()
                 ->required()
                 ->maxLength(255),
-            Select::make('roles')
-                ->relationship('roles', 'name')
-                ->multiple()
-                ->preload()
-                ->searchable(),
             Checkbox::make('change_password')
                 ->dehydrated(false)
                 ->hint('check to change password')
                 ->live()
+                ->columnSpanFull(),
+            Select::make('teams')
+                ->relationship('teams', 'name')
+                ->preload()
+                ->multiple()
                 ->columnSpanFull(),
             TextInput::make('password')
                 ->visible(fn(Get $get) => $get('change_password'))
