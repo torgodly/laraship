@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Server\Pages;
 
 use App\Filament\Clusters\Server;
+use App\Services\DatabaseServices\CreateDatabaseService;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Forms\Components\Actions\Action as FormAction;
@@ -14,6 +15,9 @@ use Filament\Forms\Set;
 use Filament\Pages\Page;
 use Illuminate\Support\Str;
 
+/**
+ * @property mixed $createDatabaseForm
+ */
 class Database extends Page
 {
     use InteractsWithActions;
@@ -34,21 +38,20 @@ class Database extends Page
         ];
     }
 
-    //create a new database
+
     public function createDatabaseForm(Form $form): Form
     {
         return $form->schema([
-            TextInput::make('name')
+            TextInput::make('database')
                 ->label(__('Database Name'))
                 ->required()
                 ->placeholder(__('Enter the database name')),
             TextInput::make('username')
                 ->label(__('Username (optional)'))
-                ->required()
                 ->placeholder(__('Enter the username')),
             TextInput::make('password')
                 ->label(__('Password (optional)'))
-                ->required()
+                ->requiredWith('username')
                 ->placeholder(__('Enter the password'))
                 ->suffixAction(
                     FormAction::make('generate')
@@ -84,9 +87,15 @@ class Database extends Page
         ])->statePath('databaseUser');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function createDatabase(): void
     {
-        //TODO: create a new database Logic here
+        $data = $this->createDatabaseForm->getState();
+        $databaseService = new CreateDatabaseService();
+        $databaseService->execute($data);
+
     }
 
     public function addDatabaseUser(): void
@@ -103,6 +112,7 @@ class Database extends Page
             'forage3'
         ];
     }
+
     public function getDatabaseUsers(): array
     {
         //TODO: implement getDatabases method
@@ -120,6 +130,7 @@ class Database extends Page
             ->color('red')
             ->label(__('Remove Database'));
     }
+
     //edit Database UserAction
     public function editDatabaseUserAction(): Action
     {

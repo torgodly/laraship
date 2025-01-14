@@ -1,11 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
-    $result = Process::run('ls');
-
-    dd($result->output());
 });
