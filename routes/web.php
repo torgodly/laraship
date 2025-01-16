@@ -27,3 +27,15 @@ Route::get('/whoami', function () {
         ->runCommand('whoami');
 });
 
+
+//sudo test
+Route::get('/sudo-test', function () {
+    return (new ShellScriptService())
+        ->runCommand('sudo -u laraship whoami');
+});
+
+//fail test
+Route::get('/fail-test', function () {
+    return (new ShellScriptService())
+        ->runCommand('sudo -u laraship whoami2');
+});
