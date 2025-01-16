@@ -1,4 +1,3 @@
-#!/bin/bash
 
 # Loop through each database and grant the user access
 @foreach($databases as $database)

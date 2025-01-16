@@ -20,7 +20,8 @@ class ShellScriptService
     {
         //create a bash script file called provision.sh inside the /home/laraship/.laraship directory and put the script content in it
         $scriptPath = '/home/laraship/.laraship/provision.sh';
-        file_put_contents($scriptPath, $script);
+        // also add #!/bin/bash at the top of the script
+        file_put_contents($scriptPath, "#!/bin/bash\n" . $script);
         //make the script executable
         chmod($scriptPath, 0755);
         //run the script as laraship user using sudo
