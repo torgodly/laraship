@@ -16,24 +16,18 @@ class ShellScriptService
      *
      * @throws ProcessFailedException If the script fails.
      */
-    public function runScript(string $scriptPath, array $arguments = []): string
+    public function runScript(string $script): string
     {
-        // Ensure the script is executable
-        if (!is_executable($scriptPath)) {
-            throw new \RuntimeException("Script {$scriptPath} is not executable.");
-        }
-
-        // Prepare the arguments in the correct format
-        $formattedArguments = [];
-        foreach ($arguments as $key => $value) {
-            $formattedArguments[] = "--{$key}={$value}";
-        }
-
-        // Prepend sudo -u laraship
-        $command = array_merge(['sudo', '-u', 'laraship', $scriptPath], $formattedArguments);
+        //create a bash script file called provision.sh inside the /home/laraship/.laraship directory and put the script content in it
+        $scriptPath = '/home/laraship/.laraship/provision.sh';
+        file_put_contents($scriptPath, $script);
+        //make the script executable
+        chmod($scriptPath, 0755);
+        //run the script as laraship user using sudo
+        $command = "sudo -u laraship {$scriptPath}";
 
         // Prepare the process
-        $process = new Process($command);
+        $process = Process::fromShellCommandline($command);
         $process->run();
 
         // Check if the process was successful
@@ -53,16 +47,12 @@ class ShellScriptService
      *
      * @throws ProcessFailedException If the command fails.
      */
-    public function runCommand(string $command, array $arguments = []): string
+    public function runCommand(string $command): string
     {
         // Prepare the arguments in the correct format
-        $formattedArguments = [];
-        foreach ($arguments as $key => $value) {
-            $formattedArguments[] = "--{$key}={$value}";
-        }
 
         // Prepend sudo -u laraship
-        $commandWithUser = "sudo -u laraship " . $command . ' ' . implode(' ', $formattedArguments);
+        $commandWithUser = "sudo -u laraship " . $command;
 
         // Prepare the process
         $process = Process::fromShellCommandline($commandWithUser);

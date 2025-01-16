@@ -1,11 +1,29 @@
 <?php
 
+use App\Services\DatabaseServices\CreateDatabaseService;
+use App\Services\ShellScriptService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+//create databse
+Route::get('/create-database', function () {
+    return (new CreateDatabaseService())
+        ->execute('laraship');
+});
+
+//create database with custom user
+Route::get('/create-database-with-user', function () {
+    return (new CreateDatabaseService())
+        ->execute('laraship', 'custom_user', 'gEW8^%WBCRgk!nyn');
+});
 
 
+//whoami
+Route::get('/whoami', function () {
+    return (new ShellScriptService())
+        ->runCommand('whoami');
+});
 

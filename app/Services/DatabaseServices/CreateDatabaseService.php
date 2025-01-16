@@ -10,6 +10,7 @@ use App\Actions\DatabaseActions\RemoveDatabaseUserAction;
 use App\Exceptions\DatabaseActions\CreateDatabaseActionException;
 use App\Exceptions\DatabaseActions\CreateDatabaseUserActionException;
 use App\Exceptions\DatabaseActions\LinkUserToDatabaseActionException;
+use App\Services\ShellScriptService;
 use Exception;
 use Log;
 
@@ -21,6 +22,8 @@ class CreateDatabaseService
     private RemoveDatabaseAction $removeDatabaseAction;
     private RemoveDatabaseUserAction $removeDatabaseUserAction;
 
+    private ShellScriptService $shellService;
+
     public function __construct()
     {
         $this->createDatabaseAction = new CreateDatabaseAction();
@@ -28,6 +31,8 @@ class CreateDatabaseService
         $this->linkUserToDatabaseAction = new LinkUserToDatabaseAction();
         $this->removeDatabaseAction = new RemoveDatabaseAction();
         $this->removeDatabaseUserAction = new RemoveDatabaseUserAction();
+        $this->shellService = new ShellScriptService();
+
     }
 
     /**
@@ -43,12 +48,12 @@ class CreateDatabaseService
             if ($username !== 'laraship') {
                 $output .= $this->createDatabaseUserAction->execute($username, $password);
             }
-
-            // Step 3: Link the user to the database
+//
+//            // Step 3: Link the user to the database
             $output .= $this->linkUserToDatabaseAction->execute($username, [$database]);
-            Log::info("Database and user created successfully: " . $output);
+//            Log::info("Database and user created successfully: " . $output);
 
-            return $output;
+            return $this->shellService->runScript($output);
         } catch (Exception $e) {
             $this->rollback($database, $username, $e);
             throw new \RuntimeException("Failed to create database and user: " . $e->getMessage());

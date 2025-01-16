@@ -26,19 +26,6 @@ class LinkUserToDatabaseAction
     public function execute(string $username, array $databases): string
     {
         // Prepare the arguments for the shell script
-        $arguments = [
-            'username' => $username,
-            'databases' => implode(',', $databases) // Convert array of databases to a comma-separated string
-        ];
-
-        // Path to the shell script
-        $scriptPath = base_path('app/Scripts/database/link_user_to_database.sh');
-
-        // Call the ShellScriptService to run the script
-        try {
-            return $this->shellService->runScript($scriptPath, $arguments); // Return the output from the script
-        } catch (Exception $e) {
-            throw new LinkUserToDatabaseActionException($e->getMessage());
-        }
+        return view('Scripts.DatabaseScripts.link_user_to_database', compact('username', 'databases'));
     }
 }

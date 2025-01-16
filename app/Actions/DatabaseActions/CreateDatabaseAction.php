@@ -24,20 +24,8 @@ class CreateDatabaseAction
      */
     public function execute(string $database): ?string
     {
-        // Prepare the arguments for the shell script
-        $arguments = [
-            'database' => $database
-        ];
-
         // Path to the shell script
-        $scriptPath = base_path('app/Scripts/database/create_database.sh');
-
-        // Call the ShellScriptService to run the script
-        try {
-            return $this->shellService->runScript($scriptPath, $arguments); // Return the output from the script
-        } catch (Exception $e) {
-            throw new CreateDatabaseActionException($e->getMessage());
-        }
+        return view('Scripts.DatabaseScripts.create_database', ['database' => $database]);
     }
 
 }
