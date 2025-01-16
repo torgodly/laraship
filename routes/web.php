@@ -11,13 +11,13 @@ Route::get('/', function () {
 //create databse
 Route::get('/create-database', function () {
     return (new CreateDatabaseService())
-        ->execute('laraship');
+        ->execute('new_database');
 });
 
 //create database with custom user
 Route::get('/create-database-with-user', function () {
     return (new CreateDatabaseService())
-        ->execute('laraship', 'custom_user', 'gEW8^%WBCRgk!nyn');
+        ->execute('new_new_database', 'custom_user', 'gEW8^%WBCRgk!nyn');
 });
 
 
