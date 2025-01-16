@@ -52,8 +52,9 @@ class CreateDatabaseService
 //            // Step 3: Link the user to the database
             $output .= $this->linkUserToDatabaseAction->execute($username, [$database]);
 //            Log::info("Database and user created successfully: " . $output);
-
-            return $this->shellService->runScript($output);
+                $data = $this->shellService->runScript($output);
+            dd($data);
+            return $data;
         } catch (Exception $e) {
             $this->rollback($database, $username, $e);
             throw new \RuntimeException("Failed to create database and user: " . $e->getMessage());
