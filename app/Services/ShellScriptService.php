@@ -25,7 +25,7 @@ class ShellScriptService
         //make the script executable
         chmod($scriptPath, 0755);
         //run the script as laraship user using sudo
-        $command = "sudo bash {$scriptPath}";
+        $command = "sudo -u laraship {$scriptPath}";
 
         // Prepare the process
         $process = Process::fromShellCommandline($command);
