@@ -22,7 +22,7 @@ class ListDatabasesService
         try {
             $output = $this->listDatabasesAction->execute();
             $databases = $this->shellService->runScript($output);
-            return explode("\n", $databases);
+            return explode("\n", trim($databases));
         } catch (Exception $e) {
             return [];
         }
