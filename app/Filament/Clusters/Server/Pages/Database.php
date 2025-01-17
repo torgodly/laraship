@@ -12,6 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Str;
 
@@ -93,8 +94,24 @@ class Database extends Page
     public function createDatabase(): void
     {
         $data = $this->createDatabaseForm->getState();
-        $databaseService = new CreateDatabaseService();
-        $databaseService->execute($data);
+        $createDatabaseService = new CreateDatabaseService();
+        try {
+            $results = $createDatabaseService->execute($data);
+            $results = explode("\n", $results);
+            foreach ($results as $result) {
+                Notification::make()
+                    ->title("Provisioning Database")
+                    ->body($result)
+                    ->success()
+                    ->send();
+            }
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title("Provisioning Database")
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
 
     }
 
