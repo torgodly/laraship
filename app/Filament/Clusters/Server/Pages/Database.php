@@ -55,12 +55,12 @@ class Database extends Page
             TextInput::make('username')
                 ->rules(['nullable', 'regex:/^[a-zA-Z0-9_\-.]+$/', 'max:32', new UserDoesNotExist()])
                 ->label(__('Username (optional)'))
+                ->helperText(__('Leave empty to use the default username (laraship)'))
                 ->placeholder(__('Enter the username')),
             TextInput::make('password')
                 ->label(__('Password (optional)'))
                 ->requiredWith('username')
-                ->password()
-                ->revealable()
+                ->minLength(8)
                 ->placeholder(__('Enter the password'))
                 ->suffixAction(
                     FormAction::make('generate')
