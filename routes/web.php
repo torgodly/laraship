@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\DatabaseServices\CreateDatabaseService;
+use App\Services\DatabaseServices\ListDatabasesService;
 use App\Services\ShellScriptService;
 use Illuminate\Support\Facades\Route;
 
@@ -38,4 +39,10 @@ Route::get('/sudo-test', function () {
 Route::get('/fail-test', function () {
     return (new ShellScriptService())
         ->runCommand('sudo -u laraship whoami2');
+});
+
+
+//get all databases
+Route::get('/list-databases', function () {
+    return (new ListDatabasesService())->execute();
 });
