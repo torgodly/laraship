@@ -99,7 +99,7 @@ class Database extends Page
         $createDatabaseService = new CreateDatabaseService();
         try {
             $results = $createDatabaseService->execute($data['database'], $data['username'], $data['password']);
-            $results = explode("\n", $results);
+            $results = explode("\n", trim($results));
             foreach ($results as $result) {
                 Notification::make()
                     ->title("Provisioning Database")
