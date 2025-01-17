@@ -4,8 +4,10 @@ namespace App\Filament\Clusters\Server\Pages;
 
 use App\Filament\Clusters\Server;
 use App\Rules\DatabaseDoesNotExist;
+use App\Rules\UserDoesNotExist;
 use App\Services\DatabaseServices\CreateDatabaseService;
 use App\Services\DatabaseServices\ListDatabasesService;
+use App\Services\DatabaseServices\ListDatabaseUsersService;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Forms\Components\Actions\Action as FormAction;
@@ -51,11 +53,14 @@ class Database extends Page
                 ->required()
                 ->placeholder(__('Enter the database name')),
             TextInput::make('username')
+                ->rules(['nullable', 'regex:/^[a-zA-Z0-9_\-.]+$/', 'max:32', new UserDoesNotExist()])
                 ->label(__('Username (optional)'))
                 ->placeholder(__('Enter the username')),
             TextInput::make('password')
                 ->label(__('Password (optional)'))
                 ->requiredWith('username')
+                ->password()
+                ->revealable()
                 ->placeholder(__('Enter the password'))
                 ->suffixAction(
                     FormAction::make('generate')
@@ -132,11 +137,7 @@ class Database extends Page
     public function getDatabaseUsers(): array
     {
         //TODO: implement getDatabases method
-        return [
-            'laraship',
-            'laraship2',
-            'laraship4'
-        ];
+        return (new ListDatabaseUsersService())->execute();
     }
 
     public function removeDatabaseAction(): Action
