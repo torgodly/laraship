@@ -6,6 +6,7 @@ use App\Filament\Clusters\Server;
 use App\Rules\DatabaseDoesNotExist;
 use App\Rules\UserDoesNotExist;
 use App\Services\DatabaseServices\CreateDatabaseService;
+use App\Services\DatabaseServices\CreateDatabaseUserService;
 use App\Services\DatabaseServices\ListDatabasesService;
 use App\Services\DatabaseServices\ListDatabaseUsersService;
 use Filament\Actions\Action;
@@ -22,6 +23,7 @@ use Illuminate\Support\Str;
 
 /**
  * @property mixed $createDatabaseForm
+ * @property mixed $addDatabaseUserForm
  */
 class Database extends Page
 {
@@ -33,7 +35,9 @@ class Database extends Page
     protected static string $view = 'filament.clusters.server.pages.database';
     protected static ?string $cluster = Server::class;
     public ?array $databaseData = [];
-    public ?array $databaseUser = [];
+    public ?array $databaseUser = [
+        'databases' => [], // Initialize databases as an array
+    ];
 
     public function getBreadcrumbs(): array
     {
@@ -77,6 +81,7 @@ class Database extends Page
         return $form->schema([
             TextInput::make('username')
                 ->label(__('Username'))
+                ->rules(['regex:/^[a-zA-Z0-9_\-.]+$/', 'max:32', new UserDoesNotExist()])
                 ->required()
                 ->placeholder(__('Enter the username')),
             TextInput::make('password')
@@ -92,7 +97,7 @@ class Database extends Page
                 ->label(__('Database'))
                 ->placeholder(__('Select the database'))
                 ->multiple()
-                ->options($this->getDatabases())
+                ->options(fn() => collect($this->getDatabases())->mapWithKeys(fn($database) => [$database => $database])),
         ])->statePath('databaseUser');
     }
 
@@ -126,6 +131,26 @@ class Database extends Page
     public function addDatabaseUser(): void
     {
         //TODO: create a new database user Logic here
+        $data = $this->addDatabaseUserForm->getState();
+        $createDatabaseUserService = new CreateDatabaseUserService();
+        try {
+            $results = $createDatabaseUserService->execute($data['username'], $data['password'], $data['databases']);
+            $results = explode("\n", trim($results));
+            foreach ($results as $result) {
+                Notification::make()
+                    ->title("Provisioning Database User")
+                    ->body($result)
+                    ->success()
+                    ->send();
+            }
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title("Provisioning Database User")
+                ->body($e->getMessage())
+                ->danger()
+                ->send();
+        }
+
     }
 
     public function getDatabases(): array
