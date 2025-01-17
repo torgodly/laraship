@@ -47,7 +47,7 @@ class Database extends Page
         return $form->schema([
             TextInput::make('database')
                 ->label(__('Database Name'))
-                ->rules(['regex:/^[a-zA-Z0-9_]+$/', 'max:64', DatabaseExists::class])
+                ->rules(['regex:/^[a-zA-Z0-9_]+$/', 'max:64', new DatabaseExists()])
                 ->required()
                 ->placeholder(__('Enter the database name')),
             TextInput::make('username')
