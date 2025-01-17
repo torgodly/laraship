@@ -2,8 +2,10 @@
 
 namespace App\Filament\Clusters\Server\Pages;
 
+use App\Actions\DatabaseActions\ListDatabasesAction;
 use App\Filament\Clusters\Server;
 use App\Services\DatabaseServices\CreateDatabaseService;
+use App\Services\DatabaseServices\ListDatabasesService;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Forms\Components\Actions\Action as FormAction;
@@ -123,11 +125,7 @@ class Database extends Page
     public function getDatabases(): array
     {
         //TODO: implement getDatabases method
-        return [
-            'forage',
-            'forage2',
-            'forage3'
-        ];
+        return (new ListDatabasesService())->execute();
     }
 
     public function getDatabaseUsers(): array

@@ -1,4 +1,3 @@
-#!/bin/bash
 
 # List all databases
 databases=$(mysql -u root -e "SHOW DATABASES;" | tail -n +2)
