@@ -7,7 +7,7 @@ use Closure;
 use Exception;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class DatabaseExists implements ValidationRule
+class DatabaseDoesNotExist implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -18,11 +18,11 @@ class DatabaseExists implements ValidationRule
     {
         try {
             $databases = (new ListDatabasesService())->execute();
-            if (!in_array($value, $databases, true)) {
-                $fail("The database $value does not exist.");
+            if (in_array($value, $databases, true)) {
+                $fail("The database already exists.");
             }
         } catch (Exception $e) {
-            $fail("Failed to validate database: " . $e->getMessage());
+            $fail("An error occurred while verifying the database existence.");
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Filament\Clusters\Server\Pages;
 
 use App\Filament\Clusters\Server;
-use App\Rules\DatabaseExists;
+use App\Rules\DatabaseDoesNotExist;
 use App\Services\DatabaseServices\CreateDatabaseService;
 use App\Services\DatabaseServices\ListDatabasesService;
 use Filament\Actions\Action;
@@ -47,7 +47,7 @@ class Database extends Page
         return $form->schema([
             TextInput::make('database')
                 ->label(__('Database Name'))
-                ->rules(['regex:/^[a-zA-Z0-9_]+$/', 'max:64', new DatabaseExists()])
+                ->rules(['regex:/^[a-zA-Z0-9_]+$/', 'max:64', new DatabaseDoesNotExist()])
                 ->required()
                 ->placeholder(__('Enter the database name')),
             TextInput::make('username')
