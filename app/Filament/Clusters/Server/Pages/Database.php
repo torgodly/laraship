@@ -96,7 +96,7 @@ class Database extends Page
             Select::make('databases')
                 ->label(__('Database'))
                 ->placeholder(__('Select the database'))
-                ->multiple()
+//                ->multiple()
                 ->options(fn() => collect($this->getDatabases())->mapWithKeys(fn($database) => [$database => $database])),
         ])->statePath('databaseUser');
     }
