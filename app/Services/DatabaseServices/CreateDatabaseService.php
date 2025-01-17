@@ -27,9 +27,10 @@ class CreateDatabaseService
     /**
      * @throws Exception
      */
-    public function execute(string $database, ?string $username = 'laraship', ?string $password = 'password'): string
+    public function execute(string $database, ?string $username = 'laraship', ?string $password = null): string
     {
         try {
+            $username = $username ?? 'laraship';
             // Step 1: Create the database
             $output = $this->createDatabaseAction->execute($database);
 
