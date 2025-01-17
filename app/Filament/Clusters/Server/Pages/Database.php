@@ -96,7 +96,7 @@ class Database extends Page
         $data = $this->createDatabaseForm->getState();
         $createDatabaseService = new CreateDatabaseService();
         try {
-            $results = $createDatabaseService->execute($data);
+            $results = $createDatabaseService->execute($data['database'], $data['username'], $data['password']);
             $results = explode("\n", $results);
             foreach ($results as $result) {
                 Notification::make()
