@@ -2,4 +2,9 @@
 
 # Create the database
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS {{$database}};"
-echo "Database '{{$database}}' has been created."
+if [ $? -eq 0 ]; then
+  echo "Database '{{$database}}' has been created."
+else
+  echo "Failed to create database '{{$database}}'."
+fi
+
