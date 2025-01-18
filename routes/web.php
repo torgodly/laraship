@@ -43,6 +43,7 @@ Route::get('/fail-test', function () {
 
 
 //get all databases
-Route::get('/list-databases', function () {
-    return (new ListDatabasesService())->execute();
+Route::get('/list-databases-users', function () {
+    return (new ListDatabasesService())
+        ->execute();
 });
