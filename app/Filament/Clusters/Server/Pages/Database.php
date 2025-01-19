@@ -162,8 +162,7 @@ class Database extends Page
     public function getDatabaseUsers(): array
     {
         //TODO: implement getDatabases method
-        dd((new ListDatabaseUsersService())->execute());
-//        return ;
+        return (new ListDatabaseUsersService())->execute();
     }
 
     public function removeDatabaseAction(): Action
