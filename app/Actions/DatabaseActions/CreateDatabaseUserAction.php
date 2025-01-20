@@ -7,13 +7,6 @@ use App\Services\ShellScriptService;
 
 class CreateDatabaseUserAction
 {
-    protected $shellService;
-
-    public function __construct()
-    {
-        $this->shellService = new ShellScriptService();
-    }
-
     /**
      * Create a new database user.
      *

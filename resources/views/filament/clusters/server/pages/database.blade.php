@@ -37,6 +37,9 @@
                     Database
                 </x-custom-filamnet.table.header-cell>
                 <x-custom-filamnet.table.header-cell>
+                    Users
+                </x-custom-filamnet.table.header-cell>
+                <x-custom-filamnet.table.header-cell>
                 </x-custom-filamnet.table.header-cell>
             </x-slot>
             <x-slot name="body_cells">
@@ -45,10 +48,17 @@
 
                     <tr class="h-12 border-t border-gray-100 dark:border-gray-700">
                         <x-custom-filamnet.table.cell>
-                            {{$database}}
+                            {{$database->name}}
                         </x-custom-filamnet.table.cell>
-                        <x-custom-filamnet.table.cell class="w-full flex justify-end">
-                            {{$this->removeDatabaseAction}}
+                        <x-custom-filamnet.table.cell>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($database->users as $user)
+                                    <x-filament::badge >{{$user->username}}</x-filament::badge>
+                                @endforeach
+                            </div>
+                        </x-custom-filamnet.table.cell>
+                        <x-custom-filamnet.table.cell class="w-full flex justify-end min-w-fit">
+                            {{($this->removeDatabaseAction)(['database' => $database->id])}}
                         </x-custom-filamnet.table.cell>
                     </tr>
                 @endforeach
@@ -80,6 +90,9 @@
                     Name
                 </x-custom-filamnet.table.header-cell>
                 <x-custom-filamnet.table.header-cell>
+                    Databases
+                </x-custom-filamnet.table.header-cell>
+                <x-custom-filamnet.table.header-cell>
                 </x-custom-filamnet.table.header-cell>
             </x-slot>
             <x-slot name="body_cells">
@@ -87,7 +100,14 @@
                 @foreach($this->getDatabaseUsers() as $user)
                     <tr class="h-12 border-t border-gray-100 dark:border-gray-700">
                         <x-custom-filamnet.table.cell>
-                            {{$user}}
+                            {{$user->username}}
+                        </x-custom-filamnet.table.cell>
+                        <x-custom-filamnet.table.cell>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($user->databases as $database)
+                                    <x-filament::badge >{{$database->name}}</x-filament::badge>
+                                @endforeach
+                            </div>
                         </x-custom-filamnet.table.cell>
                         <x-custom-filamnet.table.cell class="w-full flex justify-end">
                             {{$this->editDatabaseUserAction}}

@@ -22,6 +22,6 @@ class DbUser extends Model
 
     public function databases()
     {
-        return $this->belongsToMany(Database::class);
+        return $this->belongsToMany(Database::class, 'database_user');
     }
 }

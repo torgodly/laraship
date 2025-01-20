@@ -6,12 +6,6 @@ use App\Services\ShellScriptService;
 
 class ListDatabaseUsersAction
 {
-    protected $shellService;
-
-    public function __construct()
-    {
-        $this->shellService = new ShellScriptService();
-    }
 
     /**
      * Get a list of available databases.

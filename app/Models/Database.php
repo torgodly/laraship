@@ -22,7 +22,7 @@ class Database extends Model
 
     public function users()
     {
-        return $this->belongsToMany(DbUser::class);
+        return $this->belongsToMany(DbUser::class, 'database_user');
     }
 
 }

@@ -25,4 +25,15 @@ class Team extends Model
         return $this->hasMany(Site::class);
     }
 
+    //database
+    public function databases(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Database::class);
+    }
+
+    public function databaseUsers(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DbUser::class);
+    }
+
 }

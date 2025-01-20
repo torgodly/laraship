@@ -7,10 +7,12 @@ use App\Rules\DatabaseDoesNotExist;
 use App\Rules\UserDoesNotExist;
 use App\Services\DatabaseServices\CreateDatabaseService;
 use App\Services\DatabaseServices\CreateDatabaseUserService;
-use App\Services\DatabaseServices\ListDatabasesService;
-use App\Services\DatabaseServices\ListDatabaseUsersService;
+use App\Services\DatabaseServices\RemoveDatabaseService;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\MountableAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -19,6 +21,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -53,11 +56,13 @@ class Database extends Page
         return $form->schema([
             TextInput::make('database')
                 ->label(__('Database Name'))
-                ->rules(['regex:/^[a-zA-Z0-9_]+$/', 'max:64', new DatabaseDoesNotExist()])
+                ->unique('databases', 'name')
+                ->rules(['regex:/^[a-zA-Z0-9_]+$/', 'max:64', 'unique:databases,name'])
                 ->required()
                 ->placeholder(__('Enter the database name')),
             TextInput::make('username')
-                ->rules(['nullable', 'regex:/^[a-zA-Z0-9_\-.]+$/', 'max:32', new UserDoesNotExist()])
+                ->unique('db_users', 'username')
+                ->rules(['nullable', 'regex:/^[a-zA-Z0-9_\-.]+$/', 'max:32'])
                 ->label(__('Username (optional)'))
                 ->helperText(__('Leave empty to use the default username (laraship)'))
                 ->placeholder(__('Enter the username')),
@@ -81,7 +86,8 @@ class Database extends Page
         return $form->schema([
             TextInput::make('username')
                 ->label(__('Username'))
-                ->rules(['regex:/^[a-zA-Z0-9_\-.]+$/', 'max:32', new UserDoesNotExist()])
+                ->unique('db_users', 'username')
+                ->rules(['regex:/^[a-zA-Z0-9_\-.]+$/', 'max:32'])
                 ->required()
                 ->placeholder(__('Enter the username')),
             TextInput::make('password')
@@ -97,7 +103,7 @@ class Database extends Page
                 ->label(__('Database'))
                 ->placeholder(__('Select the database'))
                 ->multiple()
-                ->options(fn() => collect($this->getDatabases())->mapWithKeys(fn($database) => [$database => $database])),
+                ->options(fn() => $this->getDatabases()->pluck('name', 'name')->toArray())
         ])->statePath('databaseUser');
     }
 
@@ -153,24 +159,53 @@ class Database extends Page
 
     }
 
-    public function getDatabases(): array
+    public function getDatabases(): Collection
     {
         //TODO: implement getDatabases method
-        return (new ListDatabasesService())->execute();
+        return Filament::getTenant()->databases;
     }
 
-    public function getDatabaseUsers(): array
+    public function getDatabaseUsers(): Collection
     {
         //TODO: implement getDatabases method
-        return (new ListDatabaseUsersService())->execute();
+        return Filament::getTenant()->databaseUsers;
     }
 
     public function removeDatabaseAction(): Action
     {
-        return Action::make('removeDatabase')
+        return DeleteAction::make('removeDatabase')
             ->link()
-            ->color('red')
-            ->label(__('Remove Database'));
+            ->label(__('Remove'))
+            ->color('danger')
+            ->modalDescription(fn($record) => new \Illuminate\Support\HtmlString(__('Please type the name of the database <strong>(:name)</strong> to confirm its removal. This action is irreversible.', ['name' => $record->name])))
+            ->form([
+                TextInput::make('name')
+                    ->label(__('Database Name'))
+                    ->in(fn($record) => $record->name)
+                    ->required()
+                    ->placeholder(__('Enter the database name')),
+            ])
+            ->record(fn($arguments) => \App\Models\Database::find($arguments['database']))
+            ->action(function ($record, MountableAction $action) {
+                $removeDatabaseService = new RemoveDatabaseService();
+                try {
+                    $results = $removeDatabaseService->execute($record);
+                    $results = explode("\n", trim($results));
+                    foreach ($results as $result) {
+                        Notification::make()
+                            ->title("Removing Database")
+                            ->body($result)
+                            ->success()
+                            ->send();
+                    }
+                } catch (\Exception $e) {
+                    Notification::make()
+                        ->title("Removing Database")
+                        ->body($e->getMessage())
+                        ->danger()
+                        ->send();
+                }
+            });
     }
 
     //edit Database UserAction
@@ -179,6 +214,7 @@ class Database extends Page
         return Action::make('editDatabaseUser')
             ->label('Edit')
             ->link()
+
             ->label(__('Edit Database User'));
     }
 

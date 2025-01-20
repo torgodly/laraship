@@ -17,19 +17,10 @@ class RemoveDatabaseAction
      * Remove a database.
      *
      * @param string $databaseName The name of the database to remove.
-     * @return string Output of the shell script.
+     * @return \Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function execute(string $databaseName): string
+    public function execute(string $databaseName): \Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
     {
-        // Prepare arguments for the shell script
-        $arguments = [
-            'database' => $databaseName,
-        ];
-
-        // Path to the shell script
-        $scriptPath = base_path('app/Scripts/database/remove_database.sh');
-
-        // Call the ShellScriptService to run the script
-        return $this->shellService->runScript($scriptPath, $arguments);
+        return view('Scripts.DatabaseScripts.remove_database', ['database_name' => $databaseName]);
     }
 }

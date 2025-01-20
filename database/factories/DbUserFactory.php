@@ -17,7 +17,8 @@ class DbUserFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'username' => $this->faker->unique()->userName(),
+            'team_id' => 1,
         ];
     }
 }

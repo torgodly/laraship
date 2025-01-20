@@ -8,13 +8,6 @@ use Exception;
 
 class LinkUserToDatabaseAction
 {
-    protected $shellService;
-
-    public function __construct()
-    {
-        $this->shellService = new ShellScriptService();
-    }
-
     /**
      * Link a user to one or more databases.
      *

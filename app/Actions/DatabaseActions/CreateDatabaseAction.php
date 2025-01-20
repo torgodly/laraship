@@ -8,12 +8,6 @@ use Exception;
 
 class CreateDatabaseAction
 {
-    private ShellScriptService $shellService;
-
-    public function __construct()
-    {
-        $this->shellService = new ShellScriptService();
-    }
 
     /**
      * Create a new database.
