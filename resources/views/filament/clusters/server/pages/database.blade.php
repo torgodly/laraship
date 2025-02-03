@@ -110,7 +110,7 @@
                             </div>
                         </x-custom-filamnet.table.cell>
                         <x-custom-filamnet.table.cell class="w-full flex justify-end">
-                            {{$this->editDatabaseUserAction}}
+                            {{($this->editDatabaseUserAction)(['user' => $user])}}
                         </x-custom-filamnet.table.cell>
                     </tr>
                 @endforeach

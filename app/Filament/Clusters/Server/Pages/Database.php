@@ -7,11 +7,11 @@ use App\Rules\DatabaseDoesNotExist;
 use App\Rules\UserDoesNotExist;
 use App\Services\DatabaseServices\CreateDatabaseService;
 use App\Services\DatabaseServices\CreateDatabaseUserService;
+use App\Services\DatabaseServices\LinkUserToDatabaseService;
 use App\Services\DatabaseServices\RemoveDatabaseService;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\MountableAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Actions\Action as FormAction;
 use Filament\Forms\Components\Select;
@@ -21,6 +21,7 @@ use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -186,7 +187,7 @@ class Database extends Page
                     ->placeholder(__('Enter the database name')),
             ])
             ->record(fn($arguments) => \App\Models\Database::find($arguments['database']))
-            ->action(function ($record, MountableAction $action) {
+            ->action(function ($record) {
                 $removeDatabaseService = new RemoveDatabaseService();
                 try {
                     $results = $removeDatabaseService->execute($record);
@@ -212,10 +213,53 @@ class Database extends Page
     public function editDatabaseUserAction(): Action
     {
         return Action::make('editDatabaseUser')
-            ->label('Edit')
+            ->modalWidth(MaxWidth::ExtraLarge)
+            ->label('Edit User')
+            ->modalHeading(fn($arguments) => __('Edit Database User (:username)', ['username' => $arguments['user']['username']]))
             ->link()
-
-            ->label(__('Edit Database User'));
+            ->fillForm(function ($arguments) {
+                $databases = collect($arguments['user']['databases'])->pluck('name')->toArray();
+                return [
+                    'databases' => $databases,
+                ];
+            })
+            ->form([
+                TextInput::make('password')
+                    ->label(__('Password'))
+                    ->required()
+                    ->placeholder(__('Enter the password'))
+                    ->suffixAction(
+                        FormAction::make('generate')
+                            ->icon('tabler-refresh')
+                            ->Action(fn(Set $set) => $set('password', Str::random()))
+                    ),
+                Select::make('databases')
+                    ->label(__('Database'))
+                    ->placeholder(__('Select the database'))
+                    ->multiple()
+                    ->options(fn() => Filament::getTenant()->databases->pluck('name', 'name')->toArray())
+            ])
+            ->action(function ($data, $arguments) {
+//                TODO: implement editDatabaseUserAction we need to pass username not user , also password change need to happen maybe make this EditDatabaseUserService
+                try {
+                    $LinkUserToDatabaseService = new LinkUserToDatabaseService();
+                    $results = $LinkUserToDatabaseService->execute($data['user'], $data['databases']);
+                    $results = explode("\n", trim($results));
+                    foreach ($results as $result) {
+                        Notification::make()
+                            ->title("Provisioning Database User")
+                            ->body($result)
+                            ->success()
+                            ->send();
+                    }
+                } catch (\Exception $e) {
+                    Notification::make()
+                        ->title("Provisioning Database User")
+                        ->body($e->getMessage())
+                        ->danger()
+                        ->send();
+                }
+            });
     }
 
     protected function getForms(): array
