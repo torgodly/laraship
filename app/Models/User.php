@@ -65,6 +65,23 @@ class User extends Authenticatable implements HasTenants, HasDefaultTenant, Fila
         return $this->belongsToMany(Team::class);
     }
 
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
+
+    public function sources(): \Illuminate\Database\Eloquent\Relations\MorphToMany
+    {
+        return $this->morphToMany(\App\Models\Source::class, 'owner', 'source_owner');
+    }
+
+    public function usersInSameTeams(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'team_user', 'user_id', 'team_id')
+            ->whereIn('team_id', $this->teams->pluck('id'));
+    }
+
+
     /**
      * Get the attributes that should be cast.
      *
@@ -78,8 +95,4 @@ class User extends Authenticatable implements HasTenants, HasDefaultTenant, Fila
         ];
     }
 
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return true;
-    }
 }

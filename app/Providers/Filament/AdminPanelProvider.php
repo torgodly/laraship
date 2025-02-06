@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Cyan,
                 'red' => Color::Red,
+                'yellow' => Color::Yellow,
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->topNavigation()
