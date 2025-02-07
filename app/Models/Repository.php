@@ -9,10 +9,6 @@ use Sushi\Sushi;
 class Repository extends Model
 {
     use Sushi;
-    protected function sushiShouldCache()
-    {
-        return false;
-    }
 
     protected static $rows; // Declare the static property for Sushi caching
     protected static $source;
