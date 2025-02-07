@@ -89,13 +89,6 @@ Route::get('/webhooks/{source:uuid}/github/install', function (Request $request,
     return redirect()->to(ViewSource::getUrl([$source], tenant: Auth::user()?->teams()->first()));
 });
 
-//test
-Route::get('/test', function () {
-    $source = Source::first();
-    Repository::setSource($source);
-    $repos = Repository::all();
-    dd($repos);
-});
 
 
 
