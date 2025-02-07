@@ -3,6 +3,7 @@
 use App\Actions\SourceActions\GetGitHubAppData;
 use App\Actions\SourceActions\GetGithubAppRepositories;
 use App\Filament\Clusters\Server\Resources\SourceResource\Pages\ViewSource;
+use App\Models\Repository;
 use App\Models\Source;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
@@ -91,8 +92,9 @@ Route::get('/webhooks/{source:uuid}/github/install', function (Request $request,
 //test
 Route::get('/test', function () {
     $source = Source::first();
-    $repos = (new GetGithubAppRepositories($source))->execute();
-    dd($repos['repositories'][0]);
+    Repository::setSource($source);
+    $repos = Repository::all();
+    dd($repos);
 });
 
 

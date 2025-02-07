@@ -28,8 +28,7 @@ class GetGithubAppRepositories
         $token = $this->generateInstallationAccessTokenAction->execute();
         $repositories = $this->apiClint
             ->get(endpoint: config('github-api.endpoints.repositories'), token: $token, data: ['per_page' => 100]);
-        return $repositories;
-
+        return $repositories['repositories'];
     }
 
 
