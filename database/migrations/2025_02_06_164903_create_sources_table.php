@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->json('permissions')->nullable();
             $table->json('events')->nullable();
             $table->json('owner')->nullable();
+            $table->string('installation_id')->nullable();
             $table->timestamps();
         });
     }

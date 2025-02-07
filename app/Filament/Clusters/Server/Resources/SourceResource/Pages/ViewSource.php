@@ -14,7 +14,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Str;
 
 class ViewSource extends ViewRecord
 {
@@ -52,11 +51,19 @@ class ViewSource extends ViewRecord
                             \Filament\Infolists\Components\Actions::make([
                                 Action::make('register')
                                     ->label('Register Now')
-                                    ->color('success')
-                                    ->icon('tabler-circuit-resistor')
+                                    ->color('primary') // Better conveys starting or initiating an action
+                                    ->icon('tabler-plus') // A plus icon to signify adding or registering
                                     ->iconPosition('after')
                                     ->url(route('github.create-app', ['source' => $this->record->uuid]))
-                                    ->requiresConfirmation()
+                                    ->visible(!$this->record->is_registered),
+                                Action::make('install')
+                                    ->label('Install Now')
+                                    ->color('success') // Green color for a successful or positive action
+                                    ->icon('tabler-download') // Download icon for installation action
+                                    ->iconPosition('after')
+                                    ->url("https://github.com/apps/" . $this->record->app_name . "/installations/new")
+                                    ->visible($this->record->is_registered)
+
                             ])
 
                         ]),
@@ -70,14 +77,13 @@ class ViewSource extends ViewRecord
                             MaskedTextEntry::make('client_id')
                                 ->label('Client ID'),
                             TextEntry::make('client_secret')
-
                                 ->label('Client Secret'),
                             TextEntry::make('webhook_secret')
                                 ->label('Webhook Secret'),
                         ]),
 
                     ])
-                ])->columnSpanFull()
+                ])->visible($this->record->isCompleted)->columnSpanFull()
 
             ]);
     }

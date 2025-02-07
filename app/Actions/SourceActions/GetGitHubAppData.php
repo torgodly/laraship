@@ -4,7 +4,6 @@ namespace App\Actions\SourceActions;
 
 use App\Filament\Clusters\Server\Resources\SourceResource\Pages\ViewSource;
 use App\Models\Source;
-use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Auth;
@@ -45,8 +44,8 @@ class GetGitHubAppData
                     'owner' => $data['owner'],
                 ]);
                 Notification::make()
-                    ->title('GitHub App Installed')
-                    ->body('You have successfully installed the GitHub App.')
+                    ->title('GitHub App Registered')
+                    ->body('Your GitHub App has been successfully registered.')
                     ->success()
                     ->send();
                 return redirect()->to(ViewSource::getUrl([$this->source], tenant: Auth::user()?->teams()->first()));

@@ -34,9 +34,15 @@ class Source extends Model
 
     // Relationship to get only Team owners
 
-    public function getisCompletedAttribute(): bool
+    public function getIsCompletedAttribute(): bool
     {
-        return $this->app_name && $this->client_id;
+        return $this->installation_id !== null;
+    }
+
+    //is registered
+    public function getIsRegisteredAttribute()
+    {
+        return $this->private_key !== null;
     }
 
     //isCompleted

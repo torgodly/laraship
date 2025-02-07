@@ -1,8 +1,12 @@
 <?php
 
 use App\Actions\SourceActions\GetGitHubAppData;
+use App\Actions\SourceActions\GetGithubAppRepositories;
+use App\Filament\Clusters\Server\Resources\SourceResource\Pages\ViewSource;
 use App\Models\Source;
+use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -75,7 +79,21 @@ Route::get('/webhooks/{source:uuid}/github/redirect', function (Request $request
 
 Route::get('/webhooks/{source:uuid}/github/install', function (Request $request, Source $source) {
     Log::info('GitHub App Installed', $request->all());
-    dd($request->all());
+    $source->update(['installation_id' => $request->installation_id]);
+    Notification::make()
+        ->title('GitHub App Installed')
+        ->body('You have successfully installed the GitHub App.')
+        ->success()
+        ->send();
+    return redirect()->to(ViewSource::getUrl([$source], tenant: Auth::user()?->teams()->first()));
 });
+
+//test
+Route::get('/test', function () {
+    $source = Source::first();
+    $repos = (new GetGithubAppRepositories($source))->execute();
+    dd($repos['repositories'][0]);
+});
+
 
 
