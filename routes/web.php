@@ -90,5 +90,12 @@ Route::get('/webhooks/{source:uuid}/github/install', function (Request $request,
 });
 
 
-
-
+//test
+Route::get('/test', function () {
+    $source = Source::first();
+    Repository::setSource($source);
+    $repos = Repository::all();
+    dd($repos);
+//    $repositories = (new GetGithubAppRepositories($source))->execute();
+//    dd($repositories);
+});

@@ -13,6 +13,11 @@ class Repository extends Model
     protected static $rows; // Declare the static property for Sushi caching
     protected static $source;
 
+    protected function sushiShouldCache()
+    {
+        return true;
+    }
+
     public static function setSource(Source $source)
     {
         self::$source = $source;
@@ -36,7 +41,14 @@ class Repository extends Model
                 'branches_url' => $repository['branches_url'],
                 'ssh_url' => $repository['ssh_url'],
                 'default_branch' => $repository['default_branch'],
+                'source_id' => self::$source->id,
             ];
         })->toArray();
+    }
+
+    //source
+    public function source()
+    {
+        return $this->belongsTo(Source::class);
     }
 }

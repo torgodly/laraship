@@ -8,13 +8,13 @@ enum SiteTypes: string
 {
     use Enum;
     case php = 'PHP / Laravel / Symfony';
-    case html = 'Static HTML / Nuxt.js / Next.js';
+    case static = 'Static HTML / Nuxt.js / Next.js';
 
     public function label(): string
     {
         return match($this) {
             self::php => 'PHP / Laravel / Symfony',
-            self::html => 'Static HTML / Nuxt.js / Next.js',
+            self::static => 'Static HTML / Nuxt.js / Next.js',
         };
     }
 }
