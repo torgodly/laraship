@@ -6,13 +6,11 @@
     <title>Create GitHub App</title>
 </head>
 <body>
-<form action="https://github.com/settings/apps/new" method="POST" id="githubAppForm">
+<form action="{{ $url }}" method="POST" id="githubAppForm">
     <input type="hidden" name="state" value="{{ $state }}">
-    <input type="hidden" name="manifest" value="{{ $manifest }}">
+    <input type="hidden" name="manifest" value="{{ json_encode($manifest) }}">
 </form>
-
 <script>
-    // Automatically submit the form after the page loads
     document.getElementById('githubAppForm').submit();
 </script>
 </body>

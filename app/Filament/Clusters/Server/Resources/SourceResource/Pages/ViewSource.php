@@ -54,7 +54,7 @@ class ViewSource extends ViewRecord
                                     ->color('primary') // Better conveys starting or initiating an action
                                     ->icon('tabler-plus') // A plus icon to signify adding or registering
                                     ->iconPosition('after')
-                                    ->url(route('github.create-app', ['source' => $this->record->uuid]))
+                                    ->url(route('github.create-app', ['source' => $this->record->uuid, 'organization' => $this->record->organization_name]))
                                     ->visible(!$this->record->is_registered),
                                 Action::make('install')
                                     ->label('Install Now')

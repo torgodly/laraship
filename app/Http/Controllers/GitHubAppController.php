@@ -19,6 +19,7 @@ class GitHubAppController extends Controller
         $manifest = [
             "name" => $source->app_name,
             "url" => "https://laraship.test",
+            'description' => $source->description ?? 'A GitHub App for Laraship',
             "hook_attributes" => [
                 "url" => "https://laraship.test/webhooks/" . $source->uuid . "/github/events",
                 "active" => true,
@@ -29,7 +30,7 @@ class GitHubAppController extends Controller
             ],
             "public" => false,
             "request_oauth_on_install" => false,
-            "setup_url" => "https://laraship.test/webhooks/" . $source->uuid . "/github/install?source=$state",
+            "setup_url" => "https://laraship.test/webhooks/" . $source->uuid . "/github/install",
             "setup_on_update" => true,
             "default_permissions" => [
                 "contents" => "read",
@@ -46,8 +47,11 @@ class GitHubAppController extends Controller
 
         // Pass the manifest and state to the view
         return view('github.create-app', [
-            'manifest' => json_encode($manifest),
             'state' => $state,
+            'manifest' => $manifest,
+            'url' => $source->organization_name
+                ? "https://github.com/organizations/{$source->organization_name}/settings/apps/new"
+                : "https://github.com/settings/apps/new",
         ]);
     }
 

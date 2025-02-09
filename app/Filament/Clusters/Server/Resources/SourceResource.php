@@ -7,8 +7,10 @@ use App\Filament\Clusters\Server\Resources\SourceResource\Pages;
 use App\Filament\Clusters\Server\Resources\SourceResource\RelationManagers;
 use App\Models\Source;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -28,10 +30,21 @@ class SourceResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('app_name')
-                    ->label('Name')
-                    ->required()
-                    ->columnSpanFull(),
+                Grid::make()->schema([
+                    TextInput::make('app_name')
+                        ->label('Name')
+                        ->required(),
+                    TextInput::make('organization_name')
+                        ->placeholder('If empty, your GitHub user will be used. e.g. Vortex')
+                        ->label('Organization (on GitHub)')
+                        ->hintIcon('tabler-alert-square-rounded')
+                        ->hintColor('warning')
+                        ->hintIconTooltip('This is the organization or user on GitHub that owns the app.')
+                ]),
+                Textarea::make('description')
+                    ->label('Description')
+                    ->columnSpanFull()
+                    ->placeholder('A short description of the app.'),
                 Radio::make('owner')
                     ->dehydrated(false)
                     ->live()

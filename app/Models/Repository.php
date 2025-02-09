@@ -15,7 +15,7 @@ class Repository extends Model
 
     protected function sushiShouldCache()
     {
-        return true;
+        return false;
     }
 
     public static function setSource(Source $source)

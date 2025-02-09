@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->uuid();
             $table->string('type')->default('github');
+            $table->string('organization_name')->nullable();
             $table->string('app_name');
             $table->string('app_id')->nullable();
             $table->string('app_url')->nullable();

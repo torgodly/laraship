@@ -232,6 +232,7 @@ class SiteForm
                                 ->disabled(fn($get) => !$get('repository'))
                                 ->options(function ($get) {
                                     if ($get('repository')) {
+                                        Repository::setSource(Source::find($get('source')));
                                         $repository = Repository::find($get('repository'));
                                         return (new GetRepositoryBranches($repository))->execute();
                                     }
