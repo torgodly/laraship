@@ -5,6 +5,7 @@ PHP_VERSION="{{$site->php_version}}"
 EMAIL="admin@example.com"
 WEB_DIRECTORY="{{$site->web_directory}}" # Use '/' if it's the root directory
 
+
 # Ensure required directories exist
 mkdir -p /etc/nginx/laraship-conf/$DOMAIN/before
 mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
@@ -83,7 +84,9 @@ include laraship-conf/$DOMAIN/after/*;
 EOF
 
 # Step 3: Generate SSL certificates with Certbot
-sudo certbot certonly --nginx --agree-tos --non-interactive -m $EMAIL -d $DOMAIN $(echo $ALIASES | sed 's/ / -d /g')
+ALIASES_CLEAN=$(echo $ALIASES | tr -s ' ' | sed 's/ / -d /g')
+
+certbot certonly --nginx --agree-tos --non-interactive -m $EMAIL -d $DOMAIN -d $ALIASES_CLEAN
 
 # Verify SSL certificates
 if [[ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" || ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]]; then
@@ -128,4 +131,4 @@ exit 1
 }
 
 # Step 7: Restart Nginx for safety
-sudo systemctl restart nginx
+systemctl restart nginx
