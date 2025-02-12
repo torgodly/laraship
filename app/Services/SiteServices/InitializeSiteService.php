@@ -28,6 +28,7 @@ class InitializeSiteService
             return true;
         } catch (\Exception $e) {
             // Catch any exception and provide context
+            \Log::error("Failed to initialize site: " . $e->getMessage());
             throw new \RuntimeException("Failed to initialize site: " . $e->getMessage(), 0, $e);
         }
 

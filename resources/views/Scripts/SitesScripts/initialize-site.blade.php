@@ -5,9 +5,11 @@ PHP_VERSION="{{$site->php_version}}"
 EMAIL="admin@example.com"
 WEB_DIRECTORY="{{$site->web_directory}}" # Use '/' if it's the root directory
 
-# Step 1: Create the SSL redirection include file
+# Ensure required directories exist
 mkdir -p /etc/nginx/laraship-conf/$DOMAIN/before
+mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
 
+# Step 1: Create the SSL redirection include file
 cat > /etc/nginx/laraship-conf/$DOMAIN/before/redirect-to-https.conf << EOF
 server {
 listen 80;
@@ -26,8 +28,7 @@ error_page 404 /index.php;
 EOF
 
 # Step 2: Create the Nginx configuration for the site
-rm -rf /etc/nginx/sites-available/$DOMAIN
-rm -rf /etc/nginx/sites-enabled/$DOMAIN
+rm -f /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
 cat > /etc/nginx/sites-available/$DOMAIN << EOF
 include laraship-conf/$DOMAIN/before/*;
@@ -60,7 +61,7 @@ try_files \$uri \$uri/ /index.php?\$query_string;
 location = /favicon.ico { access_log off; log_not_found off; }
 location = /robots.txt  { access_log off; log_not_found off; }
 
-access_log off;
+access_log /var/log/nginx/$DOMAIN-access.log;
 error_log  /var/log/nginx/$DOMAIN-error.log error;
 
 error_page 404 /index.php;
@@ -81,16 +82,19 @@ deny all;
 include laraship-conf/$DOMAIN/after/*;
 EOF
 
-# Step 3: Generate SSL certificates with Certbot (Let's Encrypt)
+# Step 3: Generate SSL certificates with Certbot
 sudo certbot certonly --nginx --agree-tos --non-interactive -m $EMAIL -d $DOMAIN $(echo $ALIASES | sed 's/ / -d /g')
 
-# Check SSL permissions
+# Verify SSL certificates
+if [[ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" || ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]]; then
+echo "Error: SSL certificates for $DOMAIN could not be generated."
+exit 1
+fi
+
 chmod 600 /etc/letsencrypt/live/$DOMAIN/privkey.pem
 chmod 644 /etc/letsencrypt/live/$DOMAIN/fullchain.pem
 
 # Step 4: Create default site content
-mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
-
 cat > /home/laraship/$DOMAIN$WEB_DIRECTORY/index.html << EOF
 <!DOCTYPE html>
 <html>
@@ -117,8 +121,11 @@ EOF
 # Step 5: Set up the Nginx symlink
 ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
-# Step 6: Reload Nginx
-nginx -t && systemctl reload nginx
+# Step 6: Reload Nginx configuration
+nginx -t && systemctl reload nginx || {
+echo "Error: Failed to reload Nginx configuration."
+exit 1
+}
 
-# Step 7: Final check
+# Step 7: Restart Nginx for safety
 sudo systemctl restart nginx
