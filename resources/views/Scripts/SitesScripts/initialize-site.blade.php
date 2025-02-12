@@ -5,7 +5,7 @@ cat > /etc/nginx/laraship-conf/{{$site->domain}}/before/redirect-to-https.conf <
 server {
     listen 80;
     listen [::]:80;
-    server_name {{$site->domain}} {{$site->aliases ? ' '.implode(' ', $site->aliases) : ''}};
+    server_name {{$site->domain}}{{$site->aliases ? ' '.implode(' ', $site->aliases) : ''}};
     server_tokens off;
 
     # Redirect HTTP to HTTPS
@@ -15,18 +15,6 @@ server {
     error_log /var/log/nginx/{{$site->domain}}-error.log error;
 
     error_page 404 /index.php;
-
-    location ~ \.php$ {
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/var/run/php/{{$site->php_version}}-fpm.sock;
-        fastcgi_index index.php;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
 }
 EOF
 
@@ -40,28 +28,23 @@ include laraship-conf/{{$site->domain}}/before/*;
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
-    server_name {{$site->domain}} {{$site->aliases ? ' '.implode(' ', $site->aliases) : ''}};
+    server_name {{$site->domain}}{{$site->aliases ? ' '.implode(' ', $site->aliases) : ''}};
     server_tokens off;
     root /home/laraship/{{$site->domain}}{{ $site->web_directory == '/' ? '' : $site->web_directory }};
 
     # SSL Configuration
     ssl_certificate /etc/letsencrypt/live/{{$site->domain}}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{$site->domain}}/privkey.pem;
-    ssl_trusted_certificate /etc/letsencrypt/live/{{$site->domain}}/chain.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers off;
     ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY130';
-    ssl_dhparam /etc/nginx/dhparams.pem;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Content-Type-Options "nosniff";
 
     index index.html index.htm index.php;
-
-    # Laraship CONFIG (DO NOT REMOVE!)
-    include laraship-conf/{{$site->domain}}/server/*;
 
     location / {
         try_files \$uri \$uri/ /index.php?\$query_string;
@@ -80,7 +63,7 @@ server {
         fastcgi_pass unix:/var/run/php/{{$site->php_version}}-fpm.sock;
         fastcgi_index index.php;
         include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME "\$document_root\$fastcgi_script_name";
     }
 
     location ~ /\.(?!well-known).* {
@@ -88,19 +71,17 @@ server {
     }
 }
 
-# Laraship CONFIG (DO NOT REMOVE!)
 include laraship-conf/{{$site->domain}}/after/*;
 EOF
 
 # Step 3: Generate SSL certificates with Certbot (Let's Encrypt)
-sudo certbot certonly --nginx -d {{$site->domain}} {{$site->aliases ? '--domains '.implode(' ', $site->aliases) : ''}} --agree-tos --non-interactive
+sudo certbot certonly --nginx --agree-tos --non-interactive -m admin@{{$site->domain}} -d {{$site->domain}} {{$site->aliases ? '-d '.implode(' ', $site->aliases) : ''}}
 
-# Check the SSL permissions and adjust if necessary
+# Check SSL permissions
 chmod 600 /etc/letsencrypt/live/{{$site->domain}}/privkey.pem
 chmod 644 /etc/letsencrypt/live/{{$site->domain}}/fullchain.pem
 
-# Step 4: Create the default site content for the site
-# Ensure the web directory exists before creating content
+# Step 4: Create default site content
 mkdir -p /home/laraship/{{$site->domain}}{{ $site->web_directory == '/' ? '' : $site->web_directory }}
 
 cat > /home/laraship/{{$site->domain}}{{ $site->web_directory == '/' ? '' : $site->web_directory }}/index.html << EOF
@@ -121,7 +102,7 @@ cat > /home/laraship/{{$site->domain}}{{ $site->web_directory == '/' ? '' : $sit
     </style>
 </head>
 <body class="antialiased">
-    hello world from {{$site->domain}} laraship
+    Hello world from {{$site->domain}} Laraship
 </body>
 </html>
 EOF
@@ -129,8 +110,8 @@ EOF
 # Step 5: Set up the Nginx symlink
 ln -s /etc/nginx/sites-available/{{$site->domain}} /etc/nginx/sites-enabled/{{$site->domain}}
 
-# Step 6: Reload Nginx to apply all changes
-systemctl reload nginx
+# Step 6: Reload Nginx
+nginx -t && systemctl reload nginx
 
-# Step 7: Final check for Nginx and SSL status
-sudo nginx -t && sudo systemctl restart nginx
+# Step 7: Final check
+sudo systemctl restart nginx
