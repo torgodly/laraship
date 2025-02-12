@@ -10,6 +10,7 @@ WEB_DIRECTORY="/public" # Use '/' if it's the root directory
 # Ensure required directories exist
 rm -rf /etc/nginx/laraship-conf/$DOMAIN
 rm -rf /home/laraship/$DOMAIN$WEB_DIRECTORY
+rm -rf /etc/letsencrypt/live/$DOMAIN
 
 mkdir -p /etc/nginx/laraship-conf/$DOMAIN/before
 mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
@@ -84,9 +85,9 @@ server {
     # Laraship CONFIG (DO NOT REMOVE!)
     include laraship-conf/$DOMAIN/server/*;
 
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
+#    location / {
+#        try_files $uri $uri/ /index.php?$query_string;
+#    }
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location = /robots.txt  { access_log off; log_not_found off; }
@@ -96,13 +97,13 @@ server {
 
     error_page 404 /index.php;
 
-    location ~ \.php$ {
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        fastcgi_pass unix:/var/run/php/$PHP_VERSION-fpm.sock;
-        fastcgi_index index.php;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-    }
+#    location ~ \.php$ {
+#        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+#        fastcgi_pass unix:/var/run/php/$PHP_VERSION-fpm.sock;
+#        fastcgi_index index.php;
+#        include fastcgi_params;
+#        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+#    }
 
     location ~ /\.(?!well-known).* {
         deny all;
