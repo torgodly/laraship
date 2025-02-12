@@ -11,19 +11,7 @@ class Site extends Model
     /** @use HasFactory<\Database\Factories\SiteFactory> */
     use HasFactory;
 
-    protected $fillable = [
-        'team_id',
-        'type',
-        'name',
-        'domain',
-        'aliases',
-        'web_directory',
-        'php_version',
-        'wildcard',
-        'create_database',
-        'database_name',
-        'isolation',
-    ];
+    protected $guarded = ['id'];
 
     protected function casts(): array
     {

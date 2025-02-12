@@ -13,7 +13,9 @@ class ListSites extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->successRedirectUrl(fn($record) => ViewSite::getUrl([$record]))
+            ,
         ];
     }
 }

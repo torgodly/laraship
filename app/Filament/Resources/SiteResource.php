@@ -47,6 +47,7 @@ class SiteResource extends Resource
                         ->label('PHP'),
                     //Deployed
                     Tables\Columns\TextColumn::make('deployed')
+                        ->placeholder('Never Deployed')
                         ->label('Deployed')
                 ],
             );

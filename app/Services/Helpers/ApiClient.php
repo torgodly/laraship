@@ -37,7 +37,6 @@ class ApiClient
             throw new \Exception("Connection Failed: {$e->getMessage()}");
         }
     }
-
     // Add more methods for GET,
     public function get(string $endpoint, string $token, ?array $data = [])
     {

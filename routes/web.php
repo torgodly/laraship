@@ -6,7 +6,7 @@ use App\Models\Source;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return dd(view('Scripts.SitesScripts.initialize-site', ['site' => \App\Models\Site::first()])->render());
 });
 
 
@@ -23,4 +23,5 @@ Route::post('/webhooks/{source:uuid}/github/events', [GitHubAppController::class
 Route::get('/webhooks/{source:uuid}/github/redirect', [GitHubAppController::class, 'redirect']);
 
 Route::get('/webhooks/{source:uuid}/github/install', [GitHubAppController::class, 'install']);
+
 
