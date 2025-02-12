@@ -1,30 +1,51 @@
+#!/bin/bash
 # Replace the following variables with actual values
-DOMAIN="{{$site->domain}}"
-ALIASES="{{$site->aliases? implode(' ', $site->aliases) : ''}}"
-PHP_VERSION="{{$site->php_version}}"
+DOMAIN="acer.abdo.ly"
+ALIASES="hey.abdo.ly hi.abdo.ly"
+PHP_VERSION="php8.4"
 EMAIL="admin@example.com"
-WEB_DIRECTORY="{{$site->web_directory}}" # Use '/' if it's the root directory
+WEB_DIRECTORY="/public" # Use '/' if it's the root directory
 
 
 # Ensure required directories exist
+rm -rf /etc/nginx/laraship-conf/$DOMAIN
+rm -rf /home/laraship/$DOMAIN$WEB_DIRECTORY
+
 mkdir -p /etc/nginx/laraship-conf/$DOMAIN/before
 mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
 
 # Step 1: Create the SSL redirection include file
-cat > /etc/nginx/laraship-conf/$DOMAIN/before/redirect-to-https.conf << EOF
+cat > /etc/nginx/laraship-conf/$DOMAIN/before/ssl_redirect.conf << EOF
+# Redirect every request to HTTPS...
 server {
-listen 80;
-listen [::]:80;
-server_name $DOMAIN $ALIASES;
-server_tokens off;
+    listen 80;
+    listen [::]:80;
+    server_tokens off;
 
-# Redirect HTTP to HTTPS
-return 301 https://\$host\$request_uri;
+    server_name .$DOMAIN $ALIASES;
+    return 301 https://$host$request_uri;
+}
+EOF
 
-access_log off;
-error_log /var/log/nginx/$DOMAIN-error.log error;
+cat > /etc/nginx/laraship-conf/$DOMAIN/before/redirect.conf << EOF
+# Redirect SSL to primary domain SSL...
+server {
+    http2 on;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_tokens off;
 
-error_page 404 /index.php;
+    # Laraship SSL (DO NOT REMOVE!)
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_dhparam /etc/nginx/dhparams.pem;
+
+    server_name www.$DOMAIN.cloud;
+    return 301 https://$DOMAIN$request_uri;
 }
 EOF
 
@@ -32,54 +53,63 @@ EOF
 rm -f /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
 cat > /etc/nginx/sites-available/$DOMAIN << EOF
+# Laraship CONFIG (DO NOT REMOVE!)
 include laraship-conf/$DOMAIN/before/*;
 
 server {
-listen 443 ssl;
-listen [::]:443 ssl;
-server_name $DOMAIN $ALIASES;
-server_tokens off;
-root /home/laraship/$DOMAIN$WEB_DIRECTORY;
+    http2 on;
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name $DOMAIN $ALIASES;
+    server_tokens off;
+    root /home/laraship/$DOMAIN/public;
 
-# SSL Configuration
-ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
-ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+    # Laraship SSL (DO NOT REMOVE!)
+    ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
 
-ssl_protocols TLSv1.2 TLSv1.3;
-ssl_prefer_server_ciphers off;
-ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY130';
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_dhparam /etc/nginx/dhparams.pem;
 
-add_header X-Frame-Options "SAMEORIGIN";
-add_header X-XSS-Protection "1; mode=block";
-add_header X-Content-Type-Options "nosniff";
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
 
-index index.html index.htm index.php;
+    index index.html index.htm index.php;
 
-location / {
-try_files \$uri \$uri/ /index.php?\$query_string;
+    charset utf-8;
+
+    # Laraship CONFIG (DO NOT REMOVE!)
+    include laraship-conf/$DOMAIN/server/*;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    access_log off;
+    error_log  /var/log/nginx/$DOMAIN-error.log error;
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php/$PHP_VERSION-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
 }
 
-location = /favicon.ico { access_log off; log_not_found off; }
-location = /robots.txt  { access_log off; log_not_found off; }
-
-access_log /var/log/nginx/$DOMAIN-access.log;
-error_log  /var/log/nginx/$DOMAIN-error.log error;
-
-error_page 404 /index.php;
-
-location ~ \.php$ {
-fastcgi_split_path_info ^(.+\.php)(/.+)$;
-fastcgi_pass unix:/var/run/php/$PHP_VERSION-fpm.sock;
-fastcgi_index index.php;
-include fastcgi_params;
-fastcgi_param SCRIPT_FILENAME "\$document_root\$fastcgi_script_name";
-}
-
-location ~ /\.(?!well-known).* {
-deny all;
-}
-}
-
+# Laraship CONFIG (DO NOT REMOVE!)
 include laraship-conf/$DOMAIN/after/*;
 EOF
 
