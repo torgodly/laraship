@@ -113,19 +113,26 @@ server {
 include /etc/nginx/laraship-conf/$DOMAIN/after/*;
 EOF
 
-# Step 3: Generate SSL certificates with Certbot
+# Step 3: Generate or Renew SSL certificates with Certbot
 ALIASES_CLEAN=$(echo $ALIASES | tr -s ' ' | sed 's/ / -d /g')
+CERT_PATH="/etc/letsencrypt/live/$DOMAIN"
 
-certbot certonly --nginx --agree-tos --non-interactive -m $EMAIL -d $DOMAIN $ALIASES_CLEAN
-
-# Verify SSL certificates
-if [[ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" || ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]]; then
-echo "Error: SSL certificates for $DOMAIN could not be generated."
-exit 1
+# Check if the certificate already exists and is valid
+if [ -d "$CERT_PATH" ] && openssl x509 -checkend 86400 -noout -in "$CERT_PATH/fullchain.pem"; then
+    echo "Certificate for $DOMAIN is already valid and does not need renewal."
+else
+    echo "Generating or renewing SSL certificates for $DOMAIN..."
+    certbot certonly --nginx --agree-tos --non-interactive -m $EMAIL -d $DOMAIN $ALIASES_CLEAN
 fi
 
-chmod 600 /etc/letsencrypt/live/$DOMAIN/privkey.pem
-chmod 644 /etc/letsencrypt/live/$DOMAIN/fullchain.pem
+# Verify SSL certificates
+if [[ ! -f "$CERT_PATH/fullchain.pem" || ! -f "$CERT_PATH/privkey.pem" ]]; then
+    echo "Error: SSL certificates for $DOMAIN could not be generated."
+    exit 1
+fi
+
+chmod 600 "$CERT_PATH/privkey.pem"
+chmod 644 "$CERT_PATH/fullchain.pem"
 
 # Step 4: Create default site content
 cat > /home/laraship/$DOMAIN$WEB_DIRECTORY/index.html << EOF
