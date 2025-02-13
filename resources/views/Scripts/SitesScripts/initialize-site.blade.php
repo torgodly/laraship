@@ -9,7 +9,7 @@ WEB_DIRECTORY="/public" # Use '/' if it's the root directory
 
 # Ensure required directories exist
 rm -rf /etc/nginx/laraship-conf/$DOMAIN
-rm -rf /home/laraship/$DOMAIN$WEB_DIRECTORY
+rm -rf /home/laraship/$DOMAIN
 
 mkdir -p /etc/nginx/laraship-conf/$DOMAIN/before
 mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
