@@ -1,11 +1,11 @@
 #!/bin/bash
+
 # Replace the following variables with actual values
 DOMAIN="laraship.abdo.ly"
 ALIASES=""
 PHP_VERSION="php8.4"
 EMAIL="admin@example.com"
 WEB_DIRECTORY="/public" # Use '/' if it's the root directory
-
 
 # Ensure required directories exist
 rm -rf /etc/nginx/laraship-conf/$DOMAIN
@@ -23,7 +23,7 @@ server {
     server_tokens off;
 
     server_name .$DOMAIN $ALIASES;
-    return 301 https://$host$request_uri;
+    return 301 https://\$host\$request_uri;
 }
 EOF
 
@@ -45,7 +45,7 @@ server {
     ssl_dhparam /etc/nginx/dhparams.pem;
 
     server_name www.$DOMAIN.cloud;
-    return 301 https://$DOMAIN$request_uri;
+    return 301 https://$DOMAIN\$request_uri;
 }
 EOF
 
@@ -54,7 +54,7 @@ rm -f /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
 
 cat > /etc/nginx/sites-available/$DOMAIN << EOF
 # Laraship CONFIG (DO NOT REMOVE!)
-include laraship-conf/$DOMAIN/before/*;
+include /etc/nginx/laraship-conf/$DOMAIN/before/*;
 
 server {
     http2 on;
@@ -62,7 +62,7 @@ server {
     listen [::]:443 ssl;
     server_name $DOMAIN $ALIASES;
     server_tokens off;
-    root /home/laraship/$DOMAIN/public;
+    root /home/laraship/$DOMAIN$WEB_DIRECTORY;
 
     # Laraship SSL (DO NOT REMOVE!)
     ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
@@ -82,27 +82,27 @@ server {
     charset utf-8;
 
     # Laraship CONFIG (DO NOT REMOVE!)
-    include laraship-conf/$DOMAIN/server/*;
+    include /etc/nginx/laraship-conf/$DOMAIN/server/*;
 
-#    location / {
-#        try_files $uri $uri/ /index.php?$query_string;
-#    }
+    location / {
+        try_files \$uri \$uri/ /index.php?\$query_string;
+    }
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location = /robots.txt  { access_log off; log_not_found off; }
 
     access_log off;
-    error_log  /var/log/nginx/$DOMAIN-error.log error;
+    error_log /var/log/nginx/$DOMAIN-error.log error;
 
     error_page 404 /index.php;
 
-#    location ~ \.php$ {
-#        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-#        fastcgi_pass unix:/var/run/php/$PHP_VERSION-fpm.sock;
-#        fastcgi_index index.php;
-#        include fastcgi_params;
-#        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-#    }
+    location ~ \.php\$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)\$;
+        fastcgi_pass unix:/var/run/php/$PHP_VERSION-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+    }
 
     location ~ /\.(?!well-known).* {
         deny all;
@@ -110,7 +110,7 @@ server {
 }
 
 # Laraship CONFIG (DO NOT REMOVE!)
-include laraship-conf/$DOMAIN/after/*;
+include /etc/nginx/laraship-conf/$DOMAIN/after/*;
 EOF
 
 # Step 3: Generate SSL certificates with Certbot
