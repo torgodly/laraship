@@ -1,7 +1,7 @@
 #!/bin/bash
 # Replace the following variables with actual values
-DOMAIN="acer.abdo.ly"
-ALIASES="hey.abdo.ly hi.abdo.ly"
+DOMAIN="laraship.abdo.ly"
+ALIASES=""
 PHP_VERSION="php8.4"
 EMAIL="admin@example.com"
 WEB_DIRECTORY="/public" # Use '/' if it's the root directory
@@ -10,7 +10,6 @@ WEB_DIRECTORY="/public" # Use '/' if it's the root directory
 # Ensure required directories exist
 rm -rf /etc/nginx/laraship-conf/$DOMAIN
 rm -rf /home/laraship/$DOMAIN$WEB_DIRECTORY
-rm -rf /etc/letsencrypt/live/$DOMAIN
 
 mkdir -p /etc/nginx/laraship-conf/$DOMAIN/before
 mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
@@ -117,7 +116,7 @@ EOF
 # Step 3: Generate SSL certificates with Certbot
 ALIASES_CLEAN=$(echo $ALIASES | tr -s ' ' | sed 's/ / -d /g')
 
-certbot certonly --nginx --agree-tos --non-interactive -m $EMAIL -d $DOMAIN -d $ALIASES_CLEAN
+certbot certonly --nginx --agree-tos --non-interactive -m $EMAIL -d $DOMAIN $ALIASES_CLEAN
 
 # Verify SSL certificates
 if [[ ! -f "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" || ! -f "/etc/letsencrypt/live/$DOMAIN/privkey.pem" ]]; then
