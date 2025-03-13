@@ -7,7 +7,6 @@ use App\Models\Site;
 use App\Services\SiteServices\InitializeSiteService;
 use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
@@ -18,11 +17,6 @@ class ViewSite extends ViewRecord
     protected static string $resource = SiteResource::class;
 
     public $defaultAction = 'InitializeSite';
-
-
-    use App\Services\InitializeSiteService;
-    use Filament\Notifications\Notification;
-    use Filament\Actions\Action;
 
     public function InitializeSiteAction(): Action
     {
@@ -65,8 +59,12 @@ class ViewSite extends ViewRecord
             ViewEntry::make('loading')
                 ->columnSpanFull()
                 ->view('test')->visible(fn(Site $site) => !$site->initialized),
-            TextEntry::make('domain')
-                ->visible(fn(Site $site) => $site->initialized),
+
+            ViewEntry::make('loading')
+                ->columnSpanFull()
+                ->view('test')->visible(fn(Site $site) => $site->initialized),
+//            TextEntry::make('domain')
+//                ->visible(fn(Site $site) => $site->initialized),
         ]);
     }
 
