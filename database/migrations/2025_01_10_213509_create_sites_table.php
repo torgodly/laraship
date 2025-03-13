@@ -12,6 +12,7 @@ return new class extends Migration {
     {
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
+            $table->uuid();
             $table->foreignId('team_id')->constrained()->cascadeOnDelete();
             $table->string('type');
             $table->string('domain')->unique();

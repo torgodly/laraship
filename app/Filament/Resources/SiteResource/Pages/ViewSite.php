@@ -54,6 +54,8 @@ class ViewSite extends ViewRecord
             ViewEntry::make('loading')
                 ->columnSpanFull()
                 ->view('test')->visible(fn(Site $site) => !$site->initialized),
+            ViewEntry::make('domain')
+                ->visible(fn(Site $site) => $site->initialized),
         ]);
     }
 

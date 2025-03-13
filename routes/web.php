@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GitHubAppController;
 use App\Models\Repository;
+use App\Models\Site;
 use App\Models\Source;
 use Illuminate\Support\Facades\Route;
 
@@ -23,5 +24,12 @@ Route::post('/webhooks/{source:uuid}/github/events', [GitHubAppController::class
 Route::get('/webhooks/{source:uuid}/github/redirect', [GitHubAppController::class, 'redirect'])->name('github.redirect');
 
 Route::get('/webhooks/{source:uuid}/github/install', [GitHubAppController::class, 'install'])->name('github.install');
+
+
+//endpoint to call when initializing a site to change the status to initialized
+Route::get('/sites/{site:uuid}/initialize', function (Site $site) {
+    $site->update(['initialized' => true]);
+    return response()->json(['message' => 'Site Initialized'], 200);
+})->name('sites.initialize');
 
 

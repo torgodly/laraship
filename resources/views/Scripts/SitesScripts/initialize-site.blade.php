@@ -1,9 +1,9 @@
 # Replace the following variables with actual values
-DOMAIN="laraship.abdo.ly"
-ALIASES=""
-PHP_VERSION="php8.4"
-EMAIL="admin@example.com"
-WEB_DIRECTORY="/public" # Use '/' if it's the root directory
+DOMAIN="{{ $site->domain }}"
+ALIASES="{{ explode(',', $site->aliases)->join(' ') }}"
+PHP_VERSION="{{$site->php_version}}"
+EMAIL="{{Auth::user()->email}}"
+WEB_DIRECTORY="{{$site->web_directory}}" # Use '/' if it's the root directory
 
 # Ensure required directories exist
 rm -rf /etc/nginx/laraship-conf/$DOMAIN
@@ -167,3 +167,7 @@ exit 1
 
 # Step 7: Restart Nginx for safety
 systemctl restart nginx
+
+# Step 8: curl sites.initialize to initialize the site
+curl -s -X GET {{route('sites.initialize', $site->uuid)}}
+

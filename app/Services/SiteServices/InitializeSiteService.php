@@ -24,7 +24,6 @@ class InitializeSiteService
             $script = $this->initializeSiteAction->execute($site);
             $output = $this->shellService->runScript($script);
             //set the site as initialized
-            $site->update(['initialized' => true]);
             return true;
         } catch (\Exception $e) {
             // Catch any exception and provide context
