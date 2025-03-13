@@ -1,6 +1,6 @@
 # Replace the following variables with actual values
 DOMAIN="{{ $site->domain }}"
-ALIASES="{{ explode(',', $site->aliases)->join(' ') }}"
+ALIASES="{{ implode(' ', $site->aliases) }}"
 PHP_VERSION="{{$site->php_version}}"
 EMAIL="{{Auth::user()->email}}"
 WEB_DIRECTORY="{{$site->web_directory}}" # Use '/' if it's the root directory
