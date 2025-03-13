@@ -6,7 +6,7 @@ set -e
 rm -rf /home/laraship/{{$site->domain}}
 
 # Clone The Repository Into The Site
-    git clone --depth 1 --single-branch -b 'main' git@github.com:torgodly/maqrah.git {{$site->domain}}
+    git clone --depth 1 --single-branch -b 'main' https://github.com/torgodly/maqrah.git {{$site->domain}}
 
     cd /home/laraship/{{$site->domain}}
 
