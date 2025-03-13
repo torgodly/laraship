@@ -7,6 +7,7 @@ use App\Models\Site;
 use App\Services\SiteServices\InitializeSiteService;
 use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
@@ -54,7 +55,7 @@ class ViewSite extends ViewRecord
             ViewEntry::make('loading')
                 ->columnSpanFull()
                 ->view('test')->visible(fn(Site $site) => !$site->initialized),
-            ViewEntry::make('domain')
+            TextEntry::make('domain')
                 ->visible(fn(Site $site) => $site->initialized),
         ]);
     }
