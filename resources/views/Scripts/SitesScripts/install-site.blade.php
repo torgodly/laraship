@@ -15,7 +15,7 @@ git submodule update --init --recursive
 # Install Composer Dependencies If Requested
 
     cd /home/laraship/{{$site->domain}}
-    php8.3 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+    {{$site->php_version}} /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # Create Environment File If Necessary
 
@@ -172,9 +172,9 @@ EOF
     sed -i -r "s/REDIS_HOST=.*/REDIS_HOST=127.0.0.1/" /home/laraship/{{$site->domain}}/.env
     sed -i -r "s/REDIS_PASSWORD=.*/REDIS_PASSWORD=\"\"/" /home/laraship/{{$site->domain}}/.env
 
-        php8.3 /home/laraship/{{$site->domain}}/artisan key:generate --force || true
+        {{$site->php_version}} /home/laraship/{{$site->domain}}/artisan key:generate --force || true
     fi
 
 # Run Artisan Migrations If Requested
 
-    php8.3 /home/laraship/{{$site->domain}}/artisan migrate --force || true
+    {{$site->php_version}} /home/laraship/{{$site->domain}}/artisan migrate --force || true
