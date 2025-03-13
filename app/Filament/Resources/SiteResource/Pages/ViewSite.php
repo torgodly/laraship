@@ -5,6 +5,7 @@ namespace App\Filament\Resources\SiteResource\Pages;
 use App\Filament\Resources\SiteResource;
 use App\Models\Site;
 use App\Services\SiteServices\InitializeSiteService;
+use App\Services\SiteServices\InstallSiteService;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Infolists\Components\TextEntry;
@@ -67,7 +68,7 @@ class ViewSite extends ViewRecord
             \Filament\Infolists\Components\Actions::make([
                 \Filament\Infolists\Components\Actions\Action::make('install_site')
                     ->label('Install Site')
-                    ->action(fn(Site $site) => (new InitializeSiteService())->execute($site)),
+                    ->action(fn(Site $site) => (new InstallSiteService())->execute($site)),
 
             ]),
 //            TextEntry::make('domain')
