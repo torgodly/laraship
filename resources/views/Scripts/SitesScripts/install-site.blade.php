@@ -1,6 +1,6 @@
 set -e
 
-
+su - laraship -c """
 # Remove The Current Site Directory
 
 rm -rf /home/laraship/{{$site->domain}}
@@ -178,3 +178,4 @@ EOF
 # Run Artisan Migrations If Requested
 
     {{$site->php_version}} /home/laraship/{{$site->domain}}/artisan migrate --force || true
+"""
