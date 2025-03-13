@@ -38,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->topNavigation()
+            ->registration()
             ->tenant(Team::class)
             ->tenantRegistration(RegisterTeam::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
