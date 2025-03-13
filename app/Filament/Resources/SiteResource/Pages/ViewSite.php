@@ -63,6 +63,12 @@ class ViewSite extends ViewRecord
             ViewEntry::make('loading')
                 ->columnSpanFull()
                 ->view('test')->visible(fn(Site $site) => $site->initialized),
+            \Filament\Infolists\Components\Actions::make([
+                \Filament\Infolists\Components\Actions\Action::make('install_site')
+                    ->label('Install Site')
+                    ->action(fn(Site $site) => (new InitializeSiteService())->execute($site)),
+
+            ]),
 //            TextEntry::make('domain')
 //                ->visible(fn(Site $site) => $site->initialized),
         ]);
