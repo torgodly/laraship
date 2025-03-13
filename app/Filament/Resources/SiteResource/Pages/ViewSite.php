@@ -20,31 +20,41 @@ class ViewSite extends ViewRecord
     public $defaultAction = 'InitializeSite';
 
 
+    use App\Services\InitializeSiteService;
+    use Filament\Notifications\Notification;
+    use Filament\Actions\Action;
+
     public function InitializeSiteAction(): Action
     {
         return Action::make('InitializeSite')
             ->action(function (Site $site) {
+                if ($site->initialized) {
+                    return; // Early return if already initialized
+                }
+
                 try {
-                    if ($site->initialized) {
-                        return;
-                    }
+                    // Execute the site initialization
+                    (new InitializeSiteService())->execute($site);
 
-                    $service = new InitializeSiteService();
-                    $service->execute($site);
-
+                    // Send success notification
                     Notification::make()
                         ->title('Site Initialized')
                         ->body('The site has been initialized successfully.')
                         ->success()
                         ->send();
 
+                    // Return redirection to the site URL
                     return redirect(self::getUrl([$site]));
                 } catch (\Exception $e) {
+                    // Send failure notification
                     Notification::make()
                         ->title('Failed to Initialize Site')
                         ->body($e->getMessage())
                         ->danger()
                         ->send();
+
+                    // Return to the previous page or handle the error gracefully
+                    return back();
                 }
             });
     }
