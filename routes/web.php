@@ -13,15 +13,15 @@ Route::get('/', function () {
 Route::get('/github/{source:uuid}/create-app', [GitHubAppController::class, 'createApp'])->name('github.create-app');
 
 
-Route::get('/github/app/callback', function () {
-    dd('GitHub App Callback');
-});
+Route::get('/github/{source:uuid}/callback', function (Source $source) {
+    return response()->json(['message' => 'GitHub App Callback', $source->app_name]);
+})->name('github.callback');
 
-Route::post('/webhooks/{source:uuid}/github/events', [GitHubAppController::class, 'handleGitHubEvent']);
+Route::post('/webhooks/{source:uuid}/github/events', [GitHubAppController::class, 'handleGitHubEvent'])->name('github.events');
 
 
-Route::get('/webhooks/{source:uuid}/github/redirect', [GitHubAppController::class, 'redirect']);
+Route::get('/webhooks/{source:uuid}/github/redirect', [GitHubAppController::class, 'redirect'])->name('github.redirect');
 
-Route::get('/webhooks/{source:uuid}/github/install', [GitHubAppController::class, 'install']);
+Route::get('/webhooks/{source:uuid}/github/install', [GitHubAppController::class, 'install'])->name('github.install');
 
 

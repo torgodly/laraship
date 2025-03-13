@@ -18,19 +18,20 @@ class GitHubAppController extends Controller
         $state = $source->uuid; // Generate a unique state value for security
         $manifest = [
             "name" => $source->app_name,
-            "url" => "https://laraship.test",
+            "url" => env('APP_URL'),
             'description' => $source->description ?? 'A GitHub App for Laraship',
             "hook_attributes" => [
-                "url" => "https://laraship.test/webhooks/" . $source->uuid . "/github/events",
+                "url" => route('github.events', $source->uuid), //"https://laraship.test/webhooks/" . $source->uuid . "/github/events"
                 "active" => true,
             ],
-            "redirect_url" => "https://laraship.test/webhooks/" . $source->uuid . "/github/redirect",
+            "redirect_url" => route('github.redirect', $source->uuid), //"https://laraship.test/webhooks/" . $source->uuid . "/github/redirect",
             "callback_urls" => [
-                "https://laraship.test/github/" . $source->uuid . "/callback",
+                route('github.callback', $source->uuid),
+                // "https://laraship.test/github/" . $source->uuid . "/callback",
             ],
             "public" => false,
             "request_oauth_on_install" => false,
-            "setup_url" => "https://laraship.test/webhooks/" . $source->uuid . "/github/install",
+            "setup_url" => route('github.install', $source->uuid),//"https://laraship.test/webhooks/" . $source->uuid . "/github/install",
             "setup_on_update" => true,
             "default_permissions" => [
                 "contents" => "read",

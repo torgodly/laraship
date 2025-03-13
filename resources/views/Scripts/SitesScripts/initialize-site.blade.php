@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Replace the following variables with actual values
 DOMAIN="laraship.abdo.ly"
 ALIASES=""

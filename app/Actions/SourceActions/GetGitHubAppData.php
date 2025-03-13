@@ -20,7 +20,7 @@ class GetGitHubAppData
         $this->code = $code;
     }
 
-    public function execute()
+    public function execute(): \Illuminate\Http\RedirectResponse
     {
         $url = "https://api.github.com/app-manifests/" . $this->code . "/conversions";
         try {
