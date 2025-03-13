@@ -12,6 +12,12 @@ rm -rf /home/laraship/{{$site->domain}}
 
 git submodule update --init --recursive
 
+# Set permissions for storage and cache directories
+chmod -R 775 /home/laraship/fun.abdo.ly/storage /home/laraship/fun.abdo.ly/bootstrap/cache
+
+# Set the correct owner for the files (assuming Nginx user is 'laraship')
+chown -R laraship:laraship /home/laraship/fun.abdo.ly/storage /home/laraship/fun.abdo.ly/bootstrap/cache
+
 # Install Composer Dependencies If Requested
 
     cd /home/laraship/{{$site->domain}}
