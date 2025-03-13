@@ -112,7 +112,10 @@ include /etc/nginx/laraship-conf/$DOMAIN/after/*;
 EOF
 
 # Step 3: Generate or Renew SSL certificates with Certbot
-ALIASES_CLEAN=$(echo $ALIASES | tr -s ' ' | sed 's/^/-d /' | tr -s ' ')
+ALIASES_CLEAN=""
+for ALIAS in $ALIASES; do
+    ALIASES_CLEAN="$ALIASES_CLEAN -d $ALIAS"
+done
 CERT_PATH="/etc/letsencrypt/live/$DOMAIN"
 
 # Check if the certificate already exists and is valid
