@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SITE_DIR="/home/laraship/fun.abdo.ly"
+SITE_DIR="/home/laraship/card.abdo.ly"
 REPO_URL="https://github.com/torgodly/pakagetesting.git"
 REPO_BRANCH="main"
 DB_HOST="145.223.81.191"
