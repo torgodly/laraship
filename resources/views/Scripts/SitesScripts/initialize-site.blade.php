@@ -151,7 +151,7 @@ cat > /home/laraship/$DOMAIN/$WEB_DIRECTORY/index.html << EOF
 
     <style>
         body {
-            font-family: 'Figtree', sans-serif;
+            font-family: "Figtree", sans-serif;
         }
     </style>
 </head>
