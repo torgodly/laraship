@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-SITE_DIR="/home/laraship/card.abdo.ly"
+SITE_DIR="/home/laraship/key.abdo.ly"
 REPO_URL="https://github.com/torgodly/pakagetesting.git"
 REPO_BRANCH="main"
 DB_HOST="145.223.81.191"
@@ -168,7 +168,7 @@ EOF
     fi
 
     sed -i -r \"s/APP_ENV=.*/APP_ENV=$APP_ENV/\" \"$SITE_DIR/.env\"
-    sed -i -r \"s/APP_URL=.*/APP_URL=\\\"http:\/\/card.abdo.ly\\\"/\" \"$SITE_DIR/.env\"
+    sed -i -r \"s/APP_URL=.*/APP_URL=\\\"http:\/\/key.abdo.ly\\\"/\" \"$SITE_DIR/.env\"
     sed -i -r \"s/APP_DEBUG=.*/APP_DEBUG=$APP_DEBUG/\" \"$SITE_DIR/.env\"
 
     sed -i -r \"s/DB_CONNECTION=.*/DB_CONNECTION=mysql/\" \"$SITE_DIR/.env\"
