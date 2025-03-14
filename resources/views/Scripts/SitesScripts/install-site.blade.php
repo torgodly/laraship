@@ -13,7 +13,7 @@ APP_ENV="local"
 APP_DEBUG="true"
 
 # Remove The Current Site Directory
-rm -rf \"$SITE_DIR\"
+rm -rf $SITE_DIR
 su - laraship -c "
   # Clone The Repository Into The Site
   git clone --depth 1 --single-branch -b '$REPO_BRANCH' \"$REPO_URL\" \"$SITE_DIR\"
