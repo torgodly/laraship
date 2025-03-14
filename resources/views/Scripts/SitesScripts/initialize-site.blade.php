@@ -5,6 +5,7 @@ PHP_VERSION="{{$site->php_version}}"
 EMAIL="{{Auth::user()->email}}"
 WEB_DIRECTORY="{{$site->web_directory}}" # Use '/' if it's the root directory
 
+su - laraship -c "
 # Ensure required directories exist
 rm -rf /etc/nginx/laraship-conf/$DOMAIN
 rm -rf /home/laraship/$DOMAIN
@@ -174,4 +175,4 @@ systemctl restart nginx
 # Step 8: curl sites.initialize to initialize the site
 sleep 5
 curl -s -X GET {{route('sites.initialize', $site->uuid)}}
-
+"
