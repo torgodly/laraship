@@ -9,6 +9,8 @@ DB_PORT="3306"
 DB_DATABASE="maqrah"
 DB_USERNAME="laraship"
 DB_PASSWORD="taKUPwwIEJcEFP2S"
+APP_ENV="production"
+APP_DEBUG="false"
 
 su - laraship -c "
   # Remove The Current Site Directory
@@ -41,9 +43,9 @@ su - laraship -c "
         # Laravel >= 11
         cat > \"$SITE_DIR/.env\" << EOF
 APP_NAME=Laravel
-APP_ENV=production
+APP_ENV=$APP_ENV
 APP_KEY=
-APP_DEBUG=false
+APP_DEBUG=$APP_DEBUG
 APP_TIMEZONE=UTC
 APP_URL=http://localhost
 
@@ -114,9 +116,9 @@ EOF
         # Laravel <= 10
         cat > \"$SITE_DIR/.env\" << EOF
 APP_NAME=Laravel
-APP_ENV=production
+APP_ENV=$APP_ENV
 APP_KEY=
-APP_DEBUG=false
+APP_DEBUG=$APP_DEBUG
 APP_URL=http://localhost
 
 LOG_CHANNEL=stack
@@ -166,9 +168,9 @@ EOF
       fi
     fi
 
-    sed -i -r \"s/APP_ENV=.*/APP_ENV=production/\" \"$SITE_DIR/.env\"
+    sed -i -r \"s/APP_ENV=.*/APP_ENV=$APP_ENV/\" \"$SITE_DIR/.env\"
     sed -i -r \"s/APP_URL=.*/APP_URL=\\\"http:\/\/fun.abdo.ly\\\"/\" \"$SITE_DIR/.env\"
-    sed -i -r \"s/APP_DEBUG=.*/APP_DEBUG=false/\" \"$SITE_DIR/.env\"
+    sed -i -r \"s/APP_DEBUG=.*/APP_DEBUG=$APP_DEBUG/\" \"$SITE_DIR/.env\"
 
     sed -i -r \"s/DB_CONNECTION=.*/DB_CONNECTION=mysql/\" \"$SITE_DIR/.env\"
     sed -i \"s/^#DB_HOST=.*/DB_HOST=$DB_HOST/\" \"$SITE_DIR/.env\"

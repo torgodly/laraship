@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\GitHubAppController;
-use App\Models\Repository;
 use App\Models\Site;
 use App\Models\Source;
 use Illuminate\Support\Facades\Route;
@@ -28,7 +27,7 @@ Route::get('/webhooks/{source:uuid}/github/install', [GitHubAppController::class
 
 //endpoint to call when initializing a site to change the status to initialized
 Route::get('/sites/{site:uuid}/initialize', function (Site $site) {
-    $site->update(['initialized' => true]);
+    $site->update(['initialized' => \App\Enums\SiteStatus::Initialized->value]);
     return response()->json(['message' => 'Site Initialized'], 200);
 })->name('sites.initialize');
 

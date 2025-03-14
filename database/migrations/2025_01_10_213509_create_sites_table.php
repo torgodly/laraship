@@ -23,7 +23,7 @@ return new class extends Migration {
             $table->boolean('create_database')->default(false);
             $table->string('database_name')->nullable();
             $table->boolean('isolation')->default(false);
-            $table->boolean('initialized')->default(false);
+            $table->string('status')->default(\App\Enums\SiteStatus::Pending->value);
             $table->timestamps();
         });
     }

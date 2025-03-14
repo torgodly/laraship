@@ -27,7 +27,6 @@ class SiteForm
         return [
             Grid::make(5)->schema([
                 TextInput::make('domain')
-                    ->url()
                     ->placeholder('example.com')
                     ->columnSpan(3)
                     ->required(),

@@ -24,7 +24,7 @@ class ViewSite extends ViewRecord
     {
         return Action::make('InitializeSite')
             ->action(function (Site $site) {
-                if ($site->initialized) {
+                if (!$site->isPending) {
                     return; // Early return if already initialized
                 }
 
@@ -60,11 +60,11 @@ class ViewSite extends ViewRecord
         return $infolist->schema([
             ViewEntry::make('loading')
                 ->columnSpanFull()
-                ->view('test')->visible(fn(Site $site) => !$site->initialized),
+                ->view('test')->visible(fn(Site $site) => $site->isPending),
 
-            TextEntry::make('domain')
+            ViewEntry::make('domain')
                 ->columnSpanFull()
-                ->visible(fn(Site $site) => $site->initialized),
+                ->visible(fn(Site $site) => !$site->isPending),
             \Filament\Infolists\Components\Actions::make([
                 \Filament\Infolists\Components\Actions\Action::make('install_site')
                     ->label('Install Site')
