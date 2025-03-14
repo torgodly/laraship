@@ -9,8 +9,8 @@ DB_PORT="3306"
 DB_DATABASE="maqrah"
 DB_USERNAME="laraship"
 DB_PASSWORD="taKUPwwIEJcEFP2S"
-APP_ENV="production"
-APP_DEBUG="false"
+APP_ENV="local"
+APP_DEBUG="true"
 
 # Remove The Current Site Directory
 rm -rf \"$SITE_DIR\"
