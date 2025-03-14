@@ -11,7 +11,7 @@ rm -rf /etc/nginx/laraship-conf/$DOMAIN
 rm -rf /home/laraship/$DOMAIN
 
 mkdir -p /etc/nginx/laraship-conf/$DOMAIN/before
-mkdir -p /home/laraship/$DOMAIN$WEB_DIRECTORY
+mkdir -p /home/laraship/$DOMAIN/$WEB_DIRECTORY
 
 # Step 1: Create the SSL redirection include file
 cat > /etc/nginx/laraship-conf/$DOMAIN/before/ssl_redirect.conf << EOF
@@ -138,7 +138,7 @@ chmod 644 "$CERT_PATH/fullchain.pem"
 
 # Step 4: Create default site content
 su - laraship -c "
-cat > /home/laraship/$DOMAIN$WEB_DIRECTORY/index.html << EOF
+cat > /home/laraship/$DOMAIN/$WEB_DIRECTORY/index.html << EOF
 <!DOCTYPE html>
 <html>
 <head>
@@ -161,6 +161,8 @@ Hello world from $DOMAIN Laraship
 </html>
 EOF
 "
+chown -R laraship:laraship /home/laraship/$DOMAIN/$WEB_DIRECTORY
+chmod -R 755 /home/laraship/$DOMAIN/$WEB_DIRECTORY
 
 # Step 5: Set up the Nginx symlink
 ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/$DOMAIN
