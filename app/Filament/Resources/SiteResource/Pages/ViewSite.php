@@ -61,8 +61,7 @@ class ViewSite extends ViewRecord
             ViewEntry::make('loading')
                 ->columnSpanFull()
                 ->view('test')->visible(fn(Site $site) => $site->isPending),
-
-            ViewEntry::make('domain')
+            TextEntry::make('domain')
                 ->columnSpanFull()
                 ->visible(fn(Site $site) => !$site->isPending),
             \Filament\Infolists\Components\Actions::make([
