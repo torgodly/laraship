@@ -137,7 +137,7 @@ chmod 600 "$CERT_PATH/privkey.pem"
 chmod 644 "$CERT_PATH/fullchain.pem"
 
 # Step 4: Create default site content
-su - laraship -c "
+su - laraship -c '
 cat > /home/laraship/$DOMAIN/$WEB_DIRECTORY/index.html << EOF
 <!DOCTYPE html>
 <html>
@@ -160,7 +160,7 @@ Hello world from $DOMAIN Laraship
 </body>
 </html>
 EOF
-"
+'
 chown -R laraship:laraship /home/laraship/$DOMAIN/$WEB_DIRECTORY
 chmod -R 755 /home/laraship/$DOMAIN/$WEB_DIRECTORY
 
