@@ -172,5 +172,6 @@ exit 1
 systemctl restart nginx
 
 # Step 8: curl sites.initialize to initialize the site
+sleep 5
 curl -s -X GET {{route('sites.initialize', $site->uuid)}}
 
