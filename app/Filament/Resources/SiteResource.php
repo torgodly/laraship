@@ -46,13 +46,11 @@ class SiteResource extends Resource
                         ->formatStateUsing(fn($state) => str_replace('php', '', $state))
                         ->label('PHP'),
                     //Deployed
-                    Tables\Columns\TextColumn::make('deployed')
+                    Tables\Columns\TextColumn::make('status')
                         ->placeholder('Never Deployed')
+                        ->badge()
                         ->label('Deployed'),
                     //initialized
-                    Tables\Columns\IconColumn::make('initialized')
-                        ->label('Initialized')
-                        ->boolean()
                 ],
             );
     }
