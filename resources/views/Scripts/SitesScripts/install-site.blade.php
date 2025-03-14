@@ -169,7 +169,7 @@ EOF
     fi
 
     sed -i -r \"s/APP_ENV=.*/APP_ENV=$APP_ENV/\" \"$SITE_DIR/.env\"
-    sed -i -r \"s/APP_URL=.*/APP_URL=\\\"http:\/\/fun.abdo.ly\\\"/\" \"$SITE_DIR/.env\"
+    sed -i -r \"s/APP_URL=.*/APP_URL=\\\"http:\/\/card.abdo.ly\\\"/\" \"$SITE_DIR/.env\"
     sed -i -r \"s/APP_DEBUG=.*/APP_DEBUG=$APP_DEBUG/\" \"$SITE_DIR/.env\"
 
     sed -i -r \"s/DB_CONNECTION=.*/DB_CONNECTION=mysql/\" \"$SITE_DIR/.env\"
