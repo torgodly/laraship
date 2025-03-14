@@ -12,10 +12,9 @@ DB_PASSWORD="taKUPwwIEJcEFP2S"
 APP_ENV="production"
 APP_DEBUG="false"
 
+# Remove The Current Site Directory
+rm -rf \"$SITE_DIR\"
 su - laraship -c "
-  # Remove The Current Site Directory
-  rm -rf \"$SITE_DIR\"
-
   # Clone The Repository Into The Site
   git clone --depth 1 --single-branch -b '$REPO_BRANCH' \"$REPO_URL\" \"$SITE_DIR\"
 
