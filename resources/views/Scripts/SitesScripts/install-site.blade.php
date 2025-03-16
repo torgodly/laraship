@@ -7,35 +7,37 @@ DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_DATABASE="{{$site->database_name}}"
 DB_USERNAME="laraship"
-DB_PASSWORD="FTr80vpftYO37LRu"
+# DO NOT HARDCODE PASSWORD IN SCRIPT!
+ DB_PASSWORD="FTr80vpftYO37LRu"
 APP_ENV="local"
-APP_DEBUG="true"
+APP_DEBUG="false"  # CHANGE TO FALSE IN PRODUCTION
 PHP_VERSION="{{$site->php_version}}"
 
 # Function to generate .env file content
 generate_env_content() {
-local laravel_version=$1
-local db_connection="mysql"
-local db_vars=""
+  local laravel_version=$1
+  local db_connection="mysql"
+  local db_vars=""
 
-if [ -z "$DB_DATABASE" ]; then
-db_connection="sqlite"
-db_vars="
+  if [ -z "$DB_DATABASE" ]; then
+    db_connection="sqlite"
+    db_vars="
 DB_CONNECTION=sqlite
 "
-else
-db_vars="
+  else
+    db_vars="
 DB_CONNECTION=mysql
 DB_HOST=$DB_HOST
 DB_PORT=$DB_PORT
 DB_DATABASE=$DB_DATABASE
 DB_USERNAME=$DB_USERNAME
-DB_PASSWORD=\"$DB_PASSWORD\"
+# Get DB_PASSWORD from environment variable
+DB_PASSWORD=\"\${DB_PASSWORD}\"
 "
-fi
+  fi
 
-if [ "$laravel_version" -gt 10 ]; then
-cat << EOF
+  if [ "$laravel_version" -gt 10 ]; then
+    cat << EOF
 APP_NAME=Laravel
 APP_ENV=$APP_ENV
 APP_KEY=
@@ -101,8 +103,8 @@ VITE_PUSHER_PORT=\${PUSHER_PORT}
 VITE_PUSHER_SCHEME=\${PUSHER_SCHEME}
 VITE_PUSHER_APP_CLUSTER=\${PUSHER_APP_CLUSTER}
 EOF
-else
-cat << EOF
+  else
+    cat << EOF
 APP_NAME=Laravel
 APP_ENV=$APP_ENV
 APP_KEY=
@@ -148,46 +150,53 @@ VITE_PUSHER_PORT=\${PUSHER_PORT}
 VITE_PUSHER_SCHEME=\${PUSHER_SCHEME}
 VITE_PUSHER_APP_CLUSTER=\${PUSHER_APP_CLUSTER}
 EOF
-fi
+  fi
 }
-
-# Remove The Current Site Directory
-rm -rf "$SITE_DIR"
 
 # Execute commands as the 'laraship' user
 su - laraship -c "
-# Clone The Repository Into The Site
-git clone --depth 1 --single-branch -b '$REPO_BRANCH' \"$REPO_URL\" \"$SITE_DIR\"
+  export SITE_DIR='$SITE_DIR'
+  export PHP_VERSION='$PHP_VERSION'
+  export DB_PASSWORD=\${DB_PASSWORD}  # Get password from environment
+  # Ensure function is available by exporting it
+  export -f generate_env_content
 
-cd \"$SITE_DIR\"
+  # Remove The Current Site Directory
+  rm -rf \"$SITE_DIR\" || { echo \"Error: Failed to remove site directory\"; exit 1; }
 
-git submodule update --init --recursive
+  # Clone The Repository Into The Site
+  git clone --depth 1 --single-branch -b \"$REPO_BRANCH\" \"$REPO_URL\" \"$SITE_DIR\" || { echo \"Error: Git clone failed\"; exit 1; }
 
-# Set permissions for storage and cache directories
-chmod -R 775 \"$SITE_DIR/storage\" \"$SITE_DIR/bootstrap/cache\"
+  cd \"\$SITE_DIR\"
 
-# Set the correct owner for the files
-chown -R laraship:laraship \"$SITE_DIR/storage\" \"$SITE_DIR/bootstrap/cache\"
+  git submodule update --init --recursive || { echo \"Error: Git submodule update failed\"; exit 1; }
 
-# Install Composer Dependencies
-${PHP_VERSION} /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+  # Set permissions for storage and cache directories
+  chmod -R 775 \"\$SITE_DIR/storage\" \"\$SITE_DIR/bootstrap/cache\"
 
-# Create Environment File
-if [ -f \"$SITE_DIR/artisan\" ]; then
-# Determine Laravel Version
-LARAVEL_VERSION=\$(cat \"$SITE_DIR/composer.json\" | sed -n -e 's/.*\"laravel\/framework\": \"[^0-9]*\\([0-9.]\\+\\)\".*/\\1/p' | cut -d \".\" -f 1)
+  # Set the correct owner for the files
+  chown -R laraship:laraship \"\$SITE_DIR/storage\" \"\$SITE_DIR/bootstrap/cache\"
 
-#if [ -f \"$SITE_DIR/.env.example\" ]; then
-#cp \"$SITE_DIR/.env.example\" \"$SITE_DIR/.env\"
-#else
-# Create .env file based on Laravel version and DB_DATABASE
-generate_env_content \$LARAVEL_VERSION > \"$SITE_DIR/.env\"
-#fi
+  # Install Composer Dependencies
+  \$PHP_VERSION /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader || { echo \"Error: Composer install failed\"; exit 1; }
 
-# Generate app key
-${PHP_VERSION} \"$SITE_DIR/artisan\" key:generate --force || true
-fi
+  # Create Environment File
+  if [ -f \"\$SITE_DIR/artisan\" ]; then
+    # Determine Laravel Version
+    #LARAVEL_VERSION=\$(cat \"\$SITE_DIR/composer.json\" | sed -n -e 's/.*\"laravel\/framework\": \"[^0-9]*\\([0-9.]\\+\\)\".*/\\1/p' | cut -d \".\" -f 1)
+    LARAVEL_VERSION=\$(\$PHP_VERSION artisan --version | awk '{print \$2}' | cut -d '.' -f 1) #More robust Laravel version detection
 
-# Run Artisan Migrations
-${PHP_VERSION} \"$SITE_DIR/artisan\" migrate --force || true
+#    if [ -f \"\$SITE_DIR/.env.example\" ]; then
+#      cp \"\$SITE_DIR/.env.example\" \"\$SITE_DIR/.env\"
+#    else
+      # Create .env file based on Laravel version and DB_DATABASE
+      generate_env_content \$LARAVEL_VERSION > \"\$SITE_DIR/.env\"
+#    fi
+
+    # Generate app key
+    \$PHP_VERSION \"\$SITE_DIR/artisan\" key:generate --force || { echo \"Error: Key generation failed\"; exit 1; }
+  fi
+
+  # Run Artisan Migrations
+  \$PHP_VERSION \"\$SITE_DIR/artisan\" migrate --force || { echo \"Error: Migration failed\"; exit 1; }
 "
