@@ -21,7 +21,6 @@ laravel_version=$1
 generate_env_content() {
 
   local laravel_version=$1
-
   local db_connection="mysql"
   local db_vars=""
   local app_vars="
@@ -48,12 +47,6 @@ DB_USERNAME=$DB_USERNAME
 DB_PASSWORD="${DB_PASSWORD}"
 "
   fi
-
-  echo "Laravel Version: $laravel_version"
-  echo "DB Connection: $db_vars"
-
-  local app_debug_value="$APP_DEBUG" # Store APP_DEBUG value
-  local app_env_value="$APP_ENV"     # Store APP_ENV value
 
 
   if [ "$laravel_version" -gt 10 ]; then
