@@ -55,7 +55,7 @@ class SiteResource extends Resource
                 ],
             )
             ->actions([
-                EditAction::make()
+                Tables\Actions\EditAction::make()
             ]);
     }
 
