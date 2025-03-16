@@ -10,19 +10,9 @@ use Symfony\Component\Process\Process;
 
 
 Route::get('/', function () {
-    $command = "update-alternatives --display php | grep 'php' | awk -F'/' '{print \"php\"\$NF}' | sed 's/^php/php/'";
-
-    $process = Process::fromShellCommandline($command);
-    $process->run();
-
-    // Check for errors
-    if (!$process->isSuccessful()) {
-        return response($process->getErrorOutput(), 500);
-    }
-
-    // Clean up the output
-    $output = trim($process->getOutput());
-    return $output ? "[{$output}]" : '[]';
+    $output = shell_exec('ls /usr/local/php');
+    $versions = explode("\n", $output);
+    return array_filter($versions);
 });
 
 
