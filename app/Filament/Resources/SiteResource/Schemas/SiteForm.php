@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SiteResource\Schemas;
 
 use App\Actions\GithubActions\GetBranchesFromRepoAction;
+use App\Actions\PhpActions\ListPhpVersionsAction;
 use App\Actions\SourceActions\GetRepositoryBranches;
 use App\Enums\PhpVersionsEnum;
 use App\Enums\SiteTypes;
@@ -43,7 +44,7 @@ class SiteForm
                                 ->label('Project Type')
                                 ->native(false)
                                 ->default(SiteTypes::php->value)
-                                ->options(collect(SiteTypes::cases())->mapWithKeys(fn($version) => [$version->value => $version->label()]))
+                                ->options(fn() => (new ListPhpVersionsAction())->execute())
                                 ->live()
                                 ->afterStateUpdated(fn($state, $set) => $set('web_directory', $state === SiteTypes::php->value ? '/public' : '/'))
                                 ->columnSpan(2)
