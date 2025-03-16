@@ -7,17 +7,19 @@ REPO_BRANCH="{{$site->deployments->first()->branch}}"
 
 
 PHP_VERSION="{{$site->php_version}}"
+export DB_DATABASE="{{$site->database_name}}"  #This might be empty
+export DB_HOST="127.0.0.1"
+export DB_PORT="3306"
+export DB_USERNAME="laraship"
+  # DO NOT HARDCODE PASSWORD IN SCRIPT!
+export DB_PASSWORD="FTr80vpftYO37LRu"
+export APP_ENV="local"
+export APP_DEBUG="true"  # CHANGE TO FALSE IN PRODUCTION
+laravel_version=$1
 
 # Function to generate .env file content
 generate_env_content() {
-  local DB_DATABASE="{{$site->database_name}}"  #This might be empty
-  local DB_HOST="127.0.0.1"
-  local DB_PORT="3306"
-  local DB_USERNAME="laraship"
-  # DO NOT HARDCODE PASSWORD IN SCRIPT!
-  local DB_PASSWORD="FTr80vpftYO37LRu"
-  local APP_ENV="local"
-  local APP_DEBUG="true"  # CHANGE TO FALSE IN PRODUCTION
+
   local laravel_version=$1
 
   local db_connection="mysql"
@@ -190,8 +192,9 @@ if [ -f "$SITE_DIR/artisan" ]; then
 
 #  if [ -f "$SITE_DIR/.env.example" ]; then
 #      sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; cp '$SITE_DIR/.env.example' '$SITE_DIR/.env'"
+#
 #  else
-      # Create .env file based on Laravel version and DB_DATABASE
+#       Create .env file based on Laravel version and DB_DATABASE
       sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; generate_env_content $LARAVEL_VERSION > '$SITE_DIR/.env'"
 #  fi
 
