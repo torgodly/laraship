@@ -9,7 +9,7 @@ DB_PORT="3306"
 DB_DATABASE="{{$site->database_name}}"
 DB_USERNAME="laraship"
 # DO NOT HARDCODE PASSWORD IN SCRIPT!
-# DB_PASSWORD="FTr80vpftYO37LRu"
+ DB_PASSWORD="FTr80vpftYO37LRu"
 APP_ENV="local"
 APP_DEBUG="false"  # CHANGE TO FALSE IN PRODUCTION
 PHP_VERSION="{{$site->php_version}}"
@@ -40,9 +40,9 @@ DB_PASSWORD=\"\${DB_PASSWORD}\"
   if [ "$laravel_version" -gt 10 ]; then
     cat << EOF
 APP_NAME=Laravel
-APP_ENV=$APP_ENV
+APP_ENV="${APP_ENV}"
 APP_KEY=
-APP_DEBUG=$APP_DEBUG
+APP_DEBUG="${APP_DEBUG}"
 APP_TIMEZONE=UTC
 APP_URL=http://{{$site->domain}}
 
