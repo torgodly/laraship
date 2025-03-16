@@ -7,11 +7,18 @@ use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
 
+
 Route::get('/', function () {
-    $command = 'echo "[$(update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print \"php\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,)]"';
+    // The shell command to get PHP versions
+    $command = 'echo "$("update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print \"php\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,\')]"';
 
     $process = Process::fromShellCommandline($command);
     $process->run();
+
+    // Debug the output or errors
+    if (!$process->isSuccessful()) {
+        dd($process->getErrorOutput());
+    }
 
     dd($process->getOutput());
 });
