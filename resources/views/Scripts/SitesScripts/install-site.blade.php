@@ -6,7 +6,7 @@ REPO_URL="{{$site->deployments->first()->repository_url}}"
 REPO_BRANCH="{{$site->deployments->first()->branch}}"
 DB_HOST="127.0.0.1"
 DB_PORT="3306"
-DB_DATABASE="{{$site->database_name}}"
+DB_DATABASE="{{$site->database_name}}"  #This might be empty
 DB_USERNAME="laraship"
 # DO NOT HARDCODE PASSWORD IN SCRIPT!
  DB_PASSWORD="FTr80vpftYO37LRu"
@@ -37,12 +37,16 @@ DB_PASSWORD=\"\${DB_PASSWORD}\"
 "
   fi
 
+  local app_debug_value="$APP_DEBUG" # Store APP_DEBUG value
+  local app_env_value="$APP_ENV"     # Store APP_ENV value
+
+
   if [ "$laravel_version" -gt 10 ]; then
     cat << EOF
 APP_NAME=Laravel
-APP_ENV="${APP_ENV}"
+APP_ENV=$app_env_value      #Use the variable
 APP_KEY=
-APP_DEBUG="${APP_DEBUG}"
+APP_DEBUG=$app_debug_value    #Use the variable
 APP_TIMEZONE=UTC
 APP_URL=http://{{$site->domain}}
 
@@ -105,9 +109,9 @@ EOF
   else
     cat << EOF
 APP_NAME=Laravel
-APP_ENV=$APP_ENV
+APP_ENV=$app_env_value       #Use the variable
 APP_KEY=
-APP_DEBUG=$APP_DEBUG
+APP_DEBUG=$app_debug_value     #Use the variable
 APP_URL=http://{{$site->domain}}
 
 LOG_CHANNEL=stack
