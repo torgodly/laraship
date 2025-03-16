@@ -201,3 +201,5 @@ fi
 
 # Run Artisan Migrations
 sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; $PHP_VERSION artisan migrate --force" || { echo "Error: Migration failed"; exit 1; }
+#run npm install and build
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; npm install && npm run build" || { echo "Error: npm install failed"; exit 1; }
