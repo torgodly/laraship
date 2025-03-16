@@ -10,7 +10,7 @@ use Symfony\Component\Process\Process;
 
 
 Route::get('/', function () {
-    $command = "update-alternatives --display php | grep 'php' | awk -F'/' '{print \"php\"$NF}' | sed 's/^php/php/'";
+    $command = "update-alternatives --display php | grep 'php' | awk -F'/' '{print \"php\"\$NF}' | sed 's/^php/php/'";
 
     $process = Process::fromShellCommandline($command);
     $process->run();
