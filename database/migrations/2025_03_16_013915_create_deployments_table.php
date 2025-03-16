@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('action_type');
             $table->string('status')->default(\App\Enums\DeploymentStatus::Pending->value);
             $table->foreignId('triggered_by')->nullable()->constrained('users');
+            $table->text('output')->nullable();
             $table->timestamp('deployed_at')->nullable();
             $table->timestamps();
         });

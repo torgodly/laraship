@@ -67,7 +67,32 @@ class ViewSite extends ViewRecord
             \Filament\Infolists\Components\Actions::make([
                 \Filament\Infolists\Components\Actions\Action::make('install_site')
                     ->label('Install Site')
-                    ->action(fn(Site $site) => (new InstallSiteService())->execute($site)),
+                    ->action(function (Site $site) {
+                        try {
+                            // Execute the site installation
+                            (new InstallSiteService())->execute($site);
+
+                            // Send success notification
+                            Notification::make()
+                                ->title('Site Installed')
+                                ->body('The site has been installed successfully.')
+                                ->actions([
+                                    \Filament\Notifications\Actions\Action::make('View Site')
+                                        ->url($site->domain)
+                                        ->openUrlInNewTab(),
+                                ])
+                                ->success()
+                                ->send();
+
+                        } catch (\Exception $e) {
+                            Notification::make()
+                                ->title('Failed to Install Site')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                            return back();
+                        }
+                    }),
 
             ]),
 //            TextEntry::make('domain')

@@ -2,8 +2,8 @@
 
 namespace App\Services\SiteServices;
 
-use App\Actions\SiteActions\InitializeSiteAction;
 use App\Actions\SiteActions\InstallSiteAction;
+use App\Enums\DeploymentStatus;
 use App\Models\Site;
 use App\Services\ShellScriptService;
 
@@ -24,7 +24,11 @@ class InstallSiteService
             // Initialize the site through action
             $script = $this->installSiteAction->execute($site);
             $output = $this->shellService->runScript($script);
-            //set the site as initialized
+            $site->deployments->first()
+                ->update([
+                    'status' => DeploymentStatus::Deployed->value,
+                    'output' => $output,
+                ]);
             return true;
         } catch (\Exception $e) {
             // Catch any exception and provide context
