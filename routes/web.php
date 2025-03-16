@@ -9,8 +9,7 @@ use Symfony\Component\Process\Process;
 
 
 Route::get('/', function () {
-    // The shell command to get PHP versions
-    $command = 'echo "$("update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print \"php\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,\')]"';
+    $command = 'bash -c "$(update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print \"php\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,)"';
 
     $process = Process::fromShellCommandline($command);
     $process->run();
@@ -22,7 +21,6 @@ Route::get('/', function () {
 
     dd($process->getOutput());
 });
-
 
 
 Route::get('/github/{source:uuid}/create-app', [GitHubAppController::class, 'createApp'])->name('github.create-app');
