@@ -4,9 +4,11 @@ use App\Http\Controllers\GitHubAppController;
 use App\Models\Site;
 use App\Models\Source;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Process\Process;
 
 Route::get('/', function () {
-    return view('Scripts.SitesScripts.install-site', ['site' => \App\Models\Site::first()])->render();
+    $process = Process::fromShellCommandline('echo "[${php_versions[*]}]"');
+    dd($process->getOutput());
 });
 
 
