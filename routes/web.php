@@ -6,8 +6,9 @@ use App\Models\Source;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
+
 Route::get('/', function () {
-    $command = "update-alternatives --display php | grep 'link currently points to' | awk -F'/' '{print \"php\"$NF}' | sed 's/^phpphp/php/' | tr -d '\\n'";
+    $command = "update-alternatives --display php | grep 'link currently points to' | awk -F'/' '{print $NF}' | sed 's/^php/php/' | tr -d '\\n'";
 
     $process = Process::fromShellCommandline($command);
     $process->run();
