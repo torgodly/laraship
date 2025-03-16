@@ -6,11 +6,16 @@ use App\Models\Source;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
+
 Route::get('/', function () {
-    $process = Process::fromShellCommandline('echo "[${php_versions[*]}]"');
+    $command = 'echo "[$(update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print \"php\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,)]"';
+
+    $process = Process::fromShellCommandline($command);
     $process->run();
+
     dd($process->getOutput());
 });
+
 
 
 Route::get('/github/{source:uuid}/create-app', [GitHubAppController::class, 'createApp'])->name('github.create-app');
