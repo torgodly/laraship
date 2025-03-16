@@ -44,7 +44,7 @@ class SiteForm
                                 ->label('Project Type')
                                 ->native(false)
                                 ->default(SiteTypes::php->value)
-                                ->options(fn() => (new ListPhpVersionsAction())->execute())
+                                ->options(collect(SiteTypes::cases())->mapWithKeys(fn($version) => [$version->value => $version->label()]))
                                 ->live()
                                 ->afterStateUpdated(fn($state, $set) => $set('web_directory', $state === SiteTypes::php->value ? '/public' : '/'))
                                 ->columnSpan(2)
@@ -72,7 +72,7 @@ class SiteForm
                             Select::make('php_version')
                                 ->searchable()
                                 ->default(PhpVersionsEnum::PHP84->value)
-                                ->options(collect(PhpVersionsEnum::cases())->mapWithKeys(fn($version) => [$version->value => $version->label()]))
+                                ->options(fn() => (new ListPhpVersionsAction())->execute())
                                 ->required(),
                         ]),
                         Group::make()->schema([
