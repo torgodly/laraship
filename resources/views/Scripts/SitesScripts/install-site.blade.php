@@ -177,12 +177,12 @@ if [ -f \"$SITE_DIR/artisan\" ]; then
 # Determine Laravel Version
 LARAVEL_VERSION=\$(cat \"$SITE_DIR/composer.json\" | sed -n -e 's/.*\"laravel\/framework\": \"[^0-9]*\\([0-9.]\\+\\)\".*/\\1/p' | cut -d \".\" -f 1)
 
-if [ -f \"$SITE_DIR/.env.example\" ]; then
-cp \"$SITE_DIR/.env.example\" \"$SITE_DIR/.env\"
-else
+#if [ -f \"$SITE_DIR/.env.example\" ]; then
+#cp \"$SITE_DIR/.env.example\" \"$SITE_DIR/.env\"
+#else
 # Create .env file based on Laravel version and DB_DATABASE
 generate_env_content \$LARAVEL_VERSION > \"$SITE_DIR/.env\"
-fi
+#fi
 
 # Generate app key
 ${PHP_VERSION} \"$SITE_DIR/artisan\" key:generate --force || true
