@@ -9,19 +9,20 @@ use Symfony\Component\Process\Process;
 
 
 Route::get('/', function () {
-    $command = 'bash -c "$(update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print \"php\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,)"';
+    // Wrap the full command with double quotes to execute properly in bash
+    $command = 'bash -c "echo [$(update-alternatives --display php | grep \'link currently points to\' | awk -F\'/\' \'{print \\\"php\\\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,)]"';
 
     $process = Process::fromShellCommandline($command);
     $process->run();
 
-    // Debug the output or errors
+    // Check for errors first
     if (!$process->isSuccessful()) {
-        dd($process->getErrorOutput());
+        return response($process->getErrorOutput(), 500);
     }
 
-    dd($process->getOutput());
+    // Output the result
+    return $process->getOutput();
 });
-
 
 Route::get('/github/{source:uuid}/create-app', [GitHubAppController::class, 'createApp'])->name('github.create-app');
 
