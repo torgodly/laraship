@@ -6,22 +6,20 @@ use App\Models\Source;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
-
-
 Route::get('/', function () {
-    // Wrap the full command with double quotes to execute properly in bash
-    $command = 'bash -c "echo [$(update-alternatives --display php | grep \'link currently points to\' | awk -F\'/\' \'{print \\\"php\\\"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,)]"';
+    $command = 'update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print "php"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,';
 
     $process = Process::fromShellCommandline($command);
     $process->run();
 
-    // Check for errors first
+    // Check for errors
     if (!$process->isSuccessful()) {
         return response($process->getErrorOutput(), 500);
     }
 
     // Output the result
-    return $process->getOutput();
+    $output = $process->getOutput();
+    return $output ? "[{$output}]" : '[]';
 });
 
 Route::get('/github/{source:uuid}/create-app', [GitHubAppController::class, 'createApp'])->name('github.create-app');
