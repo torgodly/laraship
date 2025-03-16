@@ -22,23 +22,23 @@ local db_vars=""
     @php
         $db_vars = "
         DB_CONNECTION=sqlite
-        #DB_HOST=$DB_HOST
-        #DB_PORT=$DB_PORT
-        #DB_DATABASE=$DB_DATABASE
-        #DB_USERNAME=$DB_USERNAME
-        #DB_PASSWORD=\"$DB_PASSWORD\"
+        #DB_HOST=127.0.0.1
+        #DB_PORT=3306
+        #DB_DATABASE=laraship
+        #DB_USERNAME=root
+        #DB_PASSWORD=
         ";
     @endphp
 @else
     @php
-        $db_vars = "
+        $db_vars = '
         DB_CONNECTION=mysql
-        DB_HOST=$DB_HOST
-        DB_PORT=$DB_PORT
-        DB_DATABASE=$DB_DATABASE
-        DB_USERNAME=$DB_USERNAME
-        DB_PASSWORD=\"$DB_PASSWORD\"
-        ";
+        DB_HOST="$DB_HOST"
+        DB_PORT="$DB_PORT"
+        DB_DATABASE="$DB_DATABASE"
+        DB_USERNAME="$DB_USERNAME"
+        DB_PASSWORD="$DB_PASSWORD"
+        ';
     @endphp
 @endif
 
