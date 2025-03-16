@@ -1,52 +1,47 @@
-#!/bin/bash
 set -e
 
-SITE_DIR="/home/laraship/key.abdo.ly"
+SITE_DIR="/home/laraship/{{$site->domain}}"
 REPO_URL="https://github.com/torgodly/pakagetesting.git"
 REPO_BRANCH="main"
 DB_HOST="145.223.81.191"
 DB_PORT="3306"
-DB_DATABASE="maqrah"
+DB_DATABASE="{{$site->database_name}}"
 DB_USERNAME="laraship"
-DB_PASSWORD="taKUPwwIEJcEFP2S"
+DB_PASSWORD="{{env('DB_PASSWORD')}}"
 APP_ENV="local"
 APP_DEBUG="true"
+PHP_VERSION="{{$site->php_version}}"
 
-# Remove The Current Site Directory
-rm -rf $SITE_DIR
-su - laraship -c "
-  # Clone The Repository Into The Site
-  git clone --depth 1 --single-branch -b '$REPO_BRANCH' \"$REPO_URL\" \"$SITE_DIR\"
+# Function to generate .env file content
+generate_env_content() {
+local laravel_version=$1
+local db_connection="mysql"
+local db_vars=""
 
-  cd \"$SITE_DIR\"
+if [ -z "$DB_DATABASE" ]; then
+db_connection="sqlite"
+db_vars="
+DB_CONNECTION=sqlite
+"
+else
+db_vars="
+DB_CONNECTION=mysql
+DB_HOST=$DB_HOST
+DB_PORT=$DB_PORT
+DB_DATABASE=$DB_DATABASE
+DB_USERNAME=$DB_USERNAME
+DB_PASSWORD=\"$DB_PASSWORD\"
+"
+fi
 
-  git submodule update --init --recursive
-
-  # Set permissions for storage and cache directories
-  chmod -R 775 \"$SITE_DIR/storage\" \"$SITE_DIR/bootstrap/cache\"
-
-  # Set the correct owner for the files (assuming Nginx user is 'laraship')
-  chown -R laraship:laraship \"$SITE_DIR/storage\" \"$SITE_DIR/bootstrap/cache\"
-
-  # Install Composer Dependencies
-  php8.4 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-  # Create Environment File If Necessary
-  if [ -f \"$SITE_DIR/artisan\" ]; then
-    LARAVEL_VERSION=\$(cat \"$SITE_DIR/composer.json\" | sed -n -e 's/.*\"laravel\/framework\": \"[^0-9]*\\([0-9.]\\+\\)\".*/\\1/p1' | cut -d \".\" -f 1)
-
-    if [ -f \"$SITE_DIR/.env.example\" ]; then
-      cp \"$SITE_DIR/.env.example\" \"$SITE_DIR/.env\"
-    else
-      if [ \$LARAVEL_VERSION -gt 10 ]; then
-        # Laravel >= 11
-        cat > \"$SITE_DIR/.env\" << EOF
+if [ "$laravel_version" -gt 10 ]; then
+cat << EOF
 APP_NAME=Laravel
 APP_ENV=$APP_ENV
 APP_KEY=
 APP_DEBUG=$APP_DEBUG
 APP_TIMEZONE=UTC
-APP_URL=http://localhost
+APP_URL=http://{{$site->domain}}
 
 APP_LOCALE=en
 APP_FALLBACK_LOCALE=en
@@ -60,12 +55,7 @@ LOG_STACK=single
 LOG_DEPRECATIONS_CHANNEL=null
 LOG_LEVEL=debug
 
-DB_CONNECTION=sqlite
-#DB_HOST=$DB_HOST
-#DB_PORT=$DB_PORT
-#DB_DATABASE=$DB_DATABASE
-#DB_USERNAME=$DB_USERNAME
-#DB_PASSWORD=\"$DB_PASSWORD\"
+$db_vars
 
 BROADCAST_CONNECTION=log
 CACHE_STORE=database
@@ -78,7 +68,7 @@ MEMCACHED_HOST=127.0.0.1
 
 REDIS_CLIENT=phpredis
 REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=\"\"
+REDIS_PASSWORD=""
 REDIS_PORT=6379
 
 MAIL_MAILER=log
@@ -87,7 +77,7 @@ MAIL_PORT=2525
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS=\"hello@example.com\"
+MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME=\${APP_NAME}
 
 AWS_ACCESS_KEY_ID=
@@ -111,23 +101,17 @@ VITE_PUSHER_PORT=\${PUSHER_PORT}
 VITE_PUSHER_SCHEME=\${PUSHER_SCHEME}
 VITE_PUSHER_APP_CLUSTER=\${PUSHER_APP_CLUSTER}
 EOF
-      else
-        # Laravel <= 10
-        cat > \"$SITE_DIR/.env\" << EOF
+else
+cat << EOF
 APP_NAME=Laravel
 APP_ENV=$APP_ENV
 APP_KEY=
 APP_DEBUG=$APP_DEBUG
-APP_URL=http://localhost
+APP_URL=http://{{$site->domain}}
 
 LOG_CHANNEL=stack
 
-DB_CONNECTION=
-DB_HOST=$DB_HOST
-DB_PORT=$DB_PORT
-DB_DATABASE=$DB_DATABASE
-DB_USERNAME=$DB_USERNAME
-DB_PASSWORD=\"$DB_PASSWORD\"
+$db_vars
 
 BROADCAST_DRIVER=log
 CACHE_DRIVER=file
@@ -136,7 +120,7 @@ SESSION_DRIVER=file
 SESSION_LIFETIME=120
 
 REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=\"\"
+REDIS_PASSWORD=""
 REDIS_PORT=6379
 
 MAIL_DRIVER=smtp
@@ -164,32 +148,46 @@ VITE_PUSHER_PORT=\${PUSHER_PORT}
 VITE_PUSHER_SCHEME=\${PUSHER_SCHEME}
 VITE_PUSHER_APP_CLUSTER=\${PUSHER_APP_CLUSTER}
 EOF
-      fi
-    fi
+fi
+}
 
-    sed -i -r \"s/APP_ENV=.*/APP_ENV=$APP_ENV/\" \"$SITE_DIR/.env\"
-    sed -i -r \"s/APP_URL=.*/APP_URL=\\\"http:\/\/key.abdo.ly\\\"/\" \"$SITE_DIR/.env\"
-    sed -i -r \"s/APP_DEBUG=.*/APP_DEBUG=$APP_DEBUG/\" \"$SITE_DIR/.env\"
+# Remove The Current Site Directory
+rm -rf "$SITE_DIR"
 
-    sed -i -r \"s/DB_CONNECTION=.*/DB_CONNECTION=mysql/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^#DB_HOST=.*/DB_HOST=$DB_HOST/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^DB_HOST=.*/DB_HOST=$DB_HOST/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^#DB_PORT=.*/DB_PORT=$DB_PORT/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^DB_PORT=.*/DB_PORT=$DB_PORT/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^#DB_DATABASE=.*/DB_DATABASE=$DB_DATABASE/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^DB_DATABASE=.*/DB_DATABASE=$DB_DATABASE/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^#DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^DB_USERNAME=.*/DB_USERNAME=$DB_USERNAME/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^#DB_PASSWORD=.*/DB_PASSWORD=\\\"$DB_PASSWORD\\\"/\" \"$SITE_DIR/.env\"
-    sed -i \"s/^DB_PASSWORD=.*/DB_PASSWORD=\\\"$DB_PASSWORD\\\"/\" \"$SITE_DIR/.env\"
+# Execute commands as the 'laraship' user
+su - laraship -c "
+# Clone The Repository Into The Site
+git clone --depth 1 --single-branch -b '$REPO_BRANCH' \"$REPO_URL\" \"$SITE_DIR\"
 
-    sed -i -r \"s/MEMCACHED_HOST=.*/MEMCACHED_HOST=127.0.0.1/\" \"$SITE_DIR/.env\"
-    sed -i -r \"s/REDIS_HOST=.*/REDIS_HOST=127.0.0.1/\" \"$SITE_DIR/.env\"
-    sed -i -r \"s/REDIS_PASSWORD=.*/REDIS_PASSWORD=\\\"\\\"/\" \"$SITE_DIR/.env\"
+cd \"$SITE_DIR\"
 
-    php8.4 \"$SITE_DIR/artisan\" key:generate --force || true
-  fi
+git submodule update --init --recursive
 
-  # Run Artisan Migrations If Requested
-  php8.4 \"$SITE_DIR/artisan\" migrate --force || true
+# Set permissions for storage and cache directories
+chmod -R 775 \"$SITE_DIR/storage\" \"$SITE_DIR/bootstrap/cache\"
+
+# Set the correct owner for the files
+chown -R laraship:laraship \"$SITE_DIR/storage\" \"$SITE_DIR/bootstrap/cache\"
+
+# Install Composer Dependencies
+${PHP_VERSION} /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+# Create Environment File
+if [ -f \"$SITE_DIR/artisan\" ]; then
+# Determine Laravel Version
+LARAVEL_VERSION=\$(cat \"$SITE_DIR/composer.json\" | sed -n -e 's/.*\"laravel\/framework\": \"[^0-9]*\\([0-9.]\\+\\)\".*/\\1/p' | cut -d \".\" -f 1)
+
+if [ -f \"$SITE_DIR/.env.example\" ]; then
+cp \"$SITE_DIR/.env.example\" \"$SITE_DIR/.env\"
+else
+# Create .env file based on Laravel version and DB_DATABASE
+generate_env_content \$LARAVEL_VERSION > \"$SITE_DIR/.env\"
+fi
+
+# Generate app key
+${PHP_VERSION} \"$SITE_DIR/artisan\" key:generate --force || true
+fi
+
+# Run Artisan Migrations
+${PHP_VERSION} \"$SITE_DIR/artisan\" migrate --force || true
 "
