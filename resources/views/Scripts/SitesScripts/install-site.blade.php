@@ -179,12 +179,12 @@ if [ -f "$SITE_DIR/artisan" ]; then
   #LARAVEL_VERSION=$(cat "$SITE_DIR/composer.json" | sed -n -e 's/.*"laravel\/framework": "[^0-9]*\([0-9.]\+\\)".*/\1/p' | cut -d "." -f 1)
   LARAVEL_VERSION=$($PHP_VERSION artisan --version | awk '{print $2}' | cut -d '.' -f 1) #More robust Laravel version detection
 
-  if [ -f "$SITE_DIR/.env.example" ]; then
-    sudo -u laraship cp "$SITE_DIR/.env.example" "$SITE_DIR/.env"
-  else
+#  if [ -f "$SITE_DIR/.env.example" ]; then
+#    sudo -u laraship cp "$SITE_DIR/.env.example" "$SITE_DIR/.env"
+#  else
     # Create .env file based on Laravel version and DB_DATABASE
     sudo -u laraship generate_env_content $LARAVEL_VERSION > "$SITE_DIR/.env"
-  fi
+#  fi
 
   # Generate app key
   sudo -u laraship $PHP_VERSION artisan key:generate --force || { echo "Error: Key generation failed"; exit 1; }
