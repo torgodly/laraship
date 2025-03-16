@@ -7,7 +7,7 @@ DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_DATABASE="{{$site->database_name}}"
 DB_USERNAME="laraship"
-DB_PASSWORD="{{env('DB_PASSWORD')}}"
+DB_PASSWORD="FTr80vpftYO37LRu"
 APP_ENV="local"
 APP_DEBUG="true"
 PHP_VERSION="{{$site->php_version}}"
@@ -18,29 +18,21 @@ local laravel_version=$1
 local db_connection="mysql"
 local db_vars=""
 
-@if (empty($site->database_name))
-    @php
-        $db_vars = "
-        DB_CONNECTION=sqlite
-        #DB_HOST=127.0.0.1
-        #DB_PORT=3306
-        #DB_DATABASE=laraship
-        #DB_USERNAME=root
-        #DB_PASSWORD=
-        ";
-    @endphp
-@else
-    @php
-        $db_vars = '
-        DB_CONNECTION=mysql
-        DB_HOST="$DB_HOST"
-        DB_PORT="$DB_PORT"
-        DB_DATABASE="$DB_DATABASE"
-        DB_USERNAME="$DB_USERNAME"
-        DB_PASSWORD="$DB_PASSWORD"
-        ';
-    @endphp
-@endif
+if [ -z "$DB_DATABASE" ]; then
+db_connection="sqlite"
+db_vars="
+DB_CONNECTION=sqlite
+"
+else
+db_vars="
+DB_CONNECTION=mysql
+DB_HOST=$DB_HOST
+DB_PORT=$DB_PORT
+DB_DATABASE=$DB_DATABASE
+DB_USERNAME=$DB_USERNAME
+DB_PASSWORD=\"$DB_PASSWORD\"
+"
+fi
 
 if [ "$laravel_version" -gt 10 ]; then
 cat << EOF
@@ -63,7 +55,7 @@ LOG_STACK=single
 LOG_DEPRECATIONS_CHANNEL=null
 LOG_LEVEL=debug
 
-{{$db_vars}}
+$db_vars
 
 BROADCAST_CONNECTION=log
 CACHE_STORE=database
