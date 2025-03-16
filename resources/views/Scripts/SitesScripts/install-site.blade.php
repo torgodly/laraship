@@ -4,21 +4,32 @@ set -e
 SITE_DIR="/home/laraship/{{$site->domain}}"
 REPO_URL="{{$site->deployments->first()->repository_url}}"
 REPO_BRANCH="{{$site->deployments->first()->branch}}"
-DB_HOST="127.0.0.1"
-DB_PORT="3306"
-DB_DATABASE="{{$site->database_name}}"  #This might be empty
-DB_USERNAME="laraship"
-# DO NOT HARDCODE PASSWORD IN SCRIPT!
- DB_PASSWORD="FTr80vpftYO37LRu"
-APP_ENV="local"
-APP_DEBUG="false"  # CHANGE TO FALSE IN PRODUCTION
+
+
 PHP_VERSION="{{$site->php_version}}"
 
 # Function to generate .env file content
 generate_env_content() {
+  local DB_DATABASE="{{$site->database_name}}"  #This might be empty
+  local DB_HOST="127.0.0.1"
+  local DB_PORT="3306"
+  local DB_USERNAME="laraship"
+  # DO NOT HARDCODE PASSWORD IN SCRIPT!
+  local DB_PASSWORD="FTr80vpftYO37LRu"
+  local APP_ENV="local"
+  local APP_DEBUG="false"  # CHANGE TO FALSE IN PRODUCTION
   local laravel_version=$1
+
   local db_connection="mysql"
   local db_vars=""
+  local app_vars="
+    APP_NAME=Laravel
+    APP_ENV=$APP_ENV
+    APP_KEY=
+    APP_DEBUG=$APP_DEBUG
+    APP_TIMEZONE=UTC
+    APP_URL=http://{{$site->domain}}
+  "
 
   if [ -z "$DB_DATABASE" ]; then
     db_connection="sqlite"
@@ -43,12 +54,7 @@ DB_PASSWORD=\"\${DB_PASSWORD}\"
 
   if [ "$laravel_version" -gt 10 ]; then
     cat << EOF
-APP_NAME=Laravel
-APP_ENV=$app_env_value      #Use the variable
-APP_KEY=
-APP_DEBUG=$app_debug_value    #Use the variable
-APP_TIMEZONE=UTC
-APP_URL=http://{{$site->domain}}
+$app_vars
 
 APP_LOCALE=en
 APP_FALLBACK_LOCALE=en_US
@@ -108,11 +114,7 @@ VITE_PUSHER_SCHEME=\${PUSHER_APP_CLUSTER}
 EOF
   else
     cat << EOF
-APP_NAME=Laravel
-APP_ENV=$app_env_value       #Use the variable
-APP_KEY=
-APP_DEBUG=$app_debug_value     #Use the variable
-APP_URL=http://{{$site->domain}}
+$app_vars
 
 LOG_CHANNEL=stack
 
