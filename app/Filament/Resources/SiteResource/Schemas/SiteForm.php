@@ -70,7 +70,6 @@ class SiteForm
                                 ->maxLength(255)
                                 ->default('/public'),
                             Select::make('php_version')
-                                ->searchable()
                                 ->default(PhpVersionsEnum::PHP84->value)
                                 ->options(fn() => (new ListPhpVersionsAction())->execute())
                                 ->required(),
