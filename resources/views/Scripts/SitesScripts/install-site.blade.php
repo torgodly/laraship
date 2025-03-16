@@ -17,7 +17,7 @@ generate_env_content() {
   # DO NOT HARDCODE PASSWORD IN SCRIPT!
   local DB_PASSWORD="FTr80vpftYO37LRu"
   local APP_ENV="local"
-  local APP_DEBUG="false"  # CHANGE TO FALSE IN PRODUCTION
+  local APP_DEBUG="true"  # CHANGE TO FALSE IN PRODUCTION
   local laravel_version=$1
 
   local db_connection="mysql"
