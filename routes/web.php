@@ -8,6 +8,7 @@ use Symfony\Component\Process\Process;
 
 Route::get('/', function () {
     $process = Process::fromShellCommandline('echo "[${php_versions[*]}]"');
+    $process->run();
     dd($process->getOutput());
 });
 
