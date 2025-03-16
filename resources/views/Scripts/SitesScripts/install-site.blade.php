@@ -1,7 +1,7 @@
 set -e
 
 SITE_DIR="/home/laraship/{{$site->domain}}"
-REPO_URL="{{$site->deployments->first()->repository}}"
+REPO_URL="{{$site->deployments->first()->repository_url}}"
 REPO_BRANCH="{{$site->deployments->first()->branch}}"
 DB_HOST="127.0.0.1"
 DB_PORT="3306"
