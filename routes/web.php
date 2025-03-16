@@ -10,8 +10,9 @@ use Symfony\Component\Process\Process;
 
 
 Route::get('/', function () {
-    $output = shell_exec('ls /usr/local/php');
+    $output = shell_exec('ls /etc/php');
     $versions = explode("\n", $output);
+    $versions = array_map(fn($version) => 'php' . $version, $versions);
     return array_filter($versions);
 });
 
