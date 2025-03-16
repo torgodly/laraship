@@ -23,12 +23,12 @@ generate_env_content() {
   local db_connection="mysql"
   local db_vars=""
   local app_vars="
-    APP_NAME=Laravel
-    APP_ENV=$APP_ENV
-    APP_KEY=
-    APP_DEBUG=$APP_DEBUG
-    APP_TIMEZONE=UTC
-    APP_URL=http://{{$site->domain}}
+APP_NAME=Laravel
+APP_ENV=$APP_ENV
+APP_KEY=
+APP_DEBUG=$APP_DEBUG
+APP_TIMEZONE=UTC
+APP_URL=http://{{$site->domain}}
   "
 
   if [ -z "$DB_DATABASE" ]; then
@@ -43,8 +43,7 @@ DB_HOST=$DB_HOST
 DB_PORT=$DB_PORT
 DB_DATABASE=$DB_DATABASE
 DB_USERNAME=$DB_USERNAME
-# Get DB_PASSWORD from environment variable
-DB_PASSWORD=\"\${DB_PASSWORD}\"
+DB_PASSWORD="${DB_PASSWORD}"
 "
   fi
 
