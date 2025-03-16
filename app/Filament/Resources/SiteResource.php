@@ -35,7 +35,7 @@ class SiteResource extends Resource
             ->columns(
                 [
                     Tables\Columns\TextColumn::make('domain')
-                        ->description('No App Installed')
+                        ->description(fn($record) => $record->isDeployed ? $record->repository : 'Not Deployed')
                         ->label('Site')
                         ->size(TextColumnSize::Medium)
                         ->weight(FontWeight::Bold)

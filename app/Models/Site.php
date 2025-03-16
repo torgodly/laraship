@@ -71,4 +71,10 @@ class Site extends Model
         );
     }
 
+    public function repository(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->deployments->first()?->repository_url,
+        );
+    }
 }
