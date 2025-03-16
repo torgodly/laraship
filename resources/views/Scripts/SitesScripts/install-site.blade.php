@@ -9,7 +9,7 @@ DB_PORT="3306"
 DB_DATABASE="{{$site->database_name}}"
 DB_USERNAME="laraship"
 # DO NOT HARDCODE PASSWORD IN SCRIPT!
- DB_PASSWORD="FTr80vpftYO37LRu"
+# DB_PASSWORD="FTr80vpftYO37LRu"
 APP_ENV="local"
 APP_DEBUG="false"  # CHANGE TO FALSE IN PRODUCTION
 PHP_VERSION="{{$site->php_version}}"
@@ -141,6 +141,9 @@ AWS_BUCKET=
 PUSHER_APP_ID=
 PUSHER_APP_KEY=
 PUSHER_APP_SECRET=
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
 PUSHER_APP_CLUSTER=mt1
 
 VITE_PUSHER_APP_KEY=\${PUSHER_APP_KEY}
@@ -151,25 +154,28 @@ EOF
   fi
 }
 
+# Store the function definition in a variable
+GENERATE_ENV_CONTENT_DEF="$(declare -f generate_env_content)"
+
 # Remove The Current Site Directory
-sudo -u laraship bash -c "rm -rf '$SITE_DIR'" || { echo "Error: Failed to remove site directory"; exit 1; }
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; rm -rf '$SITE_DIR'" || { echo "Error: Failed to remove site directory"; exit 1; }
 
 # Clone The Repository Into The Site
-sudo -u laraship bash -c "git clone --depth 1 --single-branch -b '$REPO_BRANCH' '$REPO_URL' '$SITE_DIR'" || { echo "Error: Git clone failed"; exit 1; }
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; git clone --depth 1 --single-branch -b '$REPO_BRANCH' '$REPO_URL' '$SITE_DIR'" || { echo "Error: Git clone failed"; exit 1; }
 
 # Switch to the site directory
 cd "$SITE_DIR"
 
-sudo -u laraship bash -c "git submodule update --init --recursive" || { echo "Error: Git submodule update failed"; exit 1; }
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; git submodule update --init --recursive" || { echo "Error: Git submodule update failed"; exit 1; }
 
 # Set permissions for storage and cache directories
-sudo -u laraship bash -c "chmod -R 775 '$SITE_DIR/storage' '$SITE_DIR/bootstrap/cache'"
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; chmod -R 775 '$SITE_DIR/storage' '$SITE_DIR/bootstrap/cache'"
 
 # Set the correct owner for the files
-sudo -u laraship bash -c "chown -R laraship:laraship '$SITE_DIR/storage' '$SITE_DIR/bootstrap/cache'"
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; chown -R laraship:laraship '$SITE_DIR/storage' '$SITE_DIR/bootstrap/cache'"
 
 # Install Composer Dependencies
-sudo -u laraship bash -c "$PHP_VERSION /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader" || { echo "Error: Composer install failed"; exit 1; }
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; $PHP_VERSION /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader" || { echo "Error: Composer install failed"; exit 1; }
 
 # Create Environment File
 if [ -f "$SITE_DIR/artisan" ]; then
@@ -178,15 +184,15 @@ if [ -f "$SITE_DIR/artisan" ]; then
   LARAVEL_VERSION=$($PHP_VERSION artisan --version | awk '{print $2}' | cut -d '.' -f 1) #More robust Laravel version detection
 
 #  if [ -f "$SITE_DIR/.env.example" ]; then
-#      sudo -u laraship bash -c "cp '$SITE_DIR/.env.example' '$SITE_DIR/.env'"
+#      sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; cp '$SITE_DIR/.env.example' '$SITE_DIR/.env'"
 #  else
       # Create .env file based on Laravel version and DB_DATABASE
-      sudo -u laraship bash -c "generate_env_content $LARAVEL_VERSION > '$SITE_DIR/.env'"
+      sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; generate_env_content $LARAVEL_VERSION > '$SITE_DIR/.env'"
 #  fi
 
   # Generate app key
-  sudo -u laraship bash -c "$PHP_VERSION artisan key:generate --force" || { echo "Error: Key generation failed"; exit 1; }
+  sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; $PHP_VERSION artisan key:generate --force" || { echo "Error: Key generation failed"; exit 1; }
 fi
 
 # Run Artisan Migrations
-sudo -u laraship bash -c "$PHP_VERSION artisan migrate --force" || { echo "Error: Migration failed"; exit 1; }
+sudo -u laraship bash -c "$GENERATE_ENV_CONTENT_DEF; $PHP_VERSION artisan migrate --force" || { echo "Error: Migration failed"; exit 1; }
