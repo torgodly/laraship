@@ -25,10 +25,11 @@ class InstallSiteService
             $script = $this->installSiteAction->execute($site);
             $output = $this->shellService->runScript($script);
             $site->deployments->first()
-                ->update([
+                ?->update([
                     'status' => DeploymentStatus::Deployed->value,
                     'output' => $output,
                 ]);
+            $site->update(['status' => DeploymentStatus::Deployed->value]);
             return true;
         } catch (\Exception $e) {
             // Catch any exception and provide context
