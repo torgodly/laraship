@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 
 Route::get('/', function () {
-    $command = 'update-alternatives --display php | grep "link currently points to" | awk -F\'/\' \'{print "php"$NF}\' | sed \'s/^phpphp/php/\' | paste -sd,';
+    $command = "update-alternatives --display php | grep 'link currently points to' | awk -F'/' '{print \"php\"$NF}' | sed 's/^phpphp/php/' | tr -d '\\n'";
 
     $process = Process::fromShellCommandline($command);
     $process->run();
@@ -17,10 +17,11 @@ Route::get('/', function () {
         return response($process->getErrorOutput(), 500);
     }
 
-    // Output the result
-    $output = $process->getOutput();
+    // Clean up the output
+    $output = trim($process->getOutput());
     return $output ? "[{$output}]" : '[]';
 });
+
 
 Route::get('/github/{source:uuid}/create-app', [GitHubAppController::class, 'createApp'])->name('github.create-app');
 
