@@ -64,4 +64,11 @@ class Site extends Model
         ];
     }
 
+    public function url(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => 'https://' . $this->domain,
+        );
+    }
+
 }

@@ -78,7 +78,7 @@ class ViewSite extends ViewRecord
                                 ->body('The site has been installed successfully.')
                                 ->actions([
                                     \Filament\Notifications\Actions\Action::make('View Site')
-                                        ->url($site->domain)
+                                        ->url($site->url)
                                         ->openUrlInNewTab(),
                                 ])
                                 ->success()
