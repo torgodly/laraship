@@ -8,6 +8,7 @@ use App\Filament\Resources\SiteResource\Pages;
 use App\Filament\Resources\SiteResource\RelationManagers;
 use App\Filament\Resources\SiteResource\Schemas\SiteForm;
 use App\Models\Site;
+use Filament\Actions\EditAction;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
@@ -52,7 +53,10 @@ class SiteResource extends Resource
                         ->label('Deployed'),
                     //initialized
                 ],
-            );
+            )
+            ->actions([
+                EditAction::make()
+            ]);
     }
 
 
