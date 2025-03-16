@@ -6,7 +6,7 @@ use App\Models\Source;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('Scripts.SitesScripts.initialize-site', ['site' => \App\Models\Site::first()])->render();
+    return view('Scripts.SitesScripts.install-site', ['site' => \App\Models\Site::first()])->render();
 });
 
 
