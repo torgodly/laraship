@@ -1,9 +1,9 @@
 set -e
 
 SITE_DIR="/home/laraship/{{$site->domain}}"
-REPO_URL="https://github.com/torgodly/pakagetesting.git"
-REPO_BRANCH="main"
-DB_HOST="145.223.81.191"
+REPO_URL="{{$site->deployments->first()->repository}}"
+REPO_BRANCH="{{$site->deployments->first()->branch}}"
+DB_HOST="127.0.0.1"
 DB_PORT="3306"
 DB_DATABASE="{{$site->database_name}}"
 DB_USERNAME="laraship"

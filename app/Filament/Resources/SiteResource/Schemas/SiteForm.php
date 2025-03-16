@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SiteResource\Schemas;
 
+use App\Actions\GithubActions\GetBranchesFromRepoAction;
 use App\Actions\SourceActions\GetRepositoryBranches;
 use App\Enums\PhpVersionsEnum;
 use App\Enums\SiteTypes;
@@ -25,150 +26,152 @@ class SiteForm
     public static function schema()
     {
         return [
-            Grid::make(5)->schema([
-                TextInput::make('domain')
-                    ->placeholder('example.com')
-                    ->columnSpan(3)
-                    ->required(),
-                Select::make('type')
-                    ->placeholder('Select Type')
-                    ->label('Project Type')
-                    ->native(false)
-                    ->default(SiteTypes::php->value)
-                    ->options(collect(SiteTypes::cases())->mapWithKeys(fn($version) => [$version->value => $version->label()]))
-                    ->live()
-                    ->afterStateUpdated(fn($state, $set) => $set('web_directory', $state === SiteTypes::php->value ? '/public' : '/'))
-                    ->columnSpan(2)
-                    ->required(),
-            ]),
-            Grid::make(5)->schema([
-                TagsInput::make('aliases')
-                    ->placeholder('sub.example.com, www.example.com')
-                    ->columnSpan(3),
-                Select::make('team_id')
-                    ->placeholder('Select Team')
-                    ->searchable()
-                    ->preload()
-                    ->relationship('team', 'name')
-                    ->default(Filament::getTenant()->id)
-                    ->required()
-                    ->columnSpan(2),
-            ]),
-            Grid::make(3)->schema([
-                TextInput::make('web_directory')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('/public'),
-                Select::make('php_version')
-                    ->searchable()
-                    ->default(PhpVersionsEnum::PHP83->value)
-                    ->options(collect(PhpVersionsEnum::cases())->mapWithKeys(fn($version) => [$version->value => $version->label()]))
-                    ->required(),
-            ]),
-            Group::make()->schema([
-                Grid::make(3)->schema([
-                    Toggle::make('wildcard')
-                        ->required(),
-                    Toggle::make('isolation')
-                        ->required(),
-                    Group::make()->schema([
-                        Toggle::make('create_database')
-                            ->live()
-                            ->required(),
-                        TextInput::make('database_name')
-                            ->visible(fn($get) => $get('create_database'))
-                            ->maxLength(255),
+
+            Wizard::make([
+                Step::make('Server')
+                    ->schema([
+                        Grid::make(5)->schema([
+                            TextInput::make('domain')
+                                ->live()
+                                ->afterStateUpdated(fn($set, $get) => $set('aliases', $get('wildcard') ? ['*.' . $get('domain')] : []))
+                                ->placeholder('example.com')
+                                ->unique(ignoreRecord: true)
+                                ->columnSpan(3)
+                                ->required(),
+                            Select::make('type')
+                                ->placeholder('Select Type')
+                                ->label('Project Type')
+                                ->native(false)
+                                ->default(SiteTypes::php->value)
+                                ->options(collect(SiteTypes::cases())->mapWithKeys(fn($version) => [$version->value => $version->label()]))
+                                ->live()
+                                ->afterStateUpdated(fn($state, $set) => $set('web_directory', $state === SiteTypes::php->value ? '/public' : '/'))
+                                ->columnSpan(2)
+                                ->required(),
+                        ]),
+                        Grid::make(5)->schema([
+                            TagsInput::make('aliases')
+                                ->live()
+                                ->placeholder('sub.example.com, www.example.com')
+                                ->columnSpan(3),
+                            Select::make('team_id')
+                                ->placeholder('Select Team')
+                                ->searchable()
+                                ->preload()
+                                ->relationship('team', 'name')
+                                ->default(Filament::getTenant()->id)
+                                ->required()
+                                ->columnSpan(2),
+                        ]),
+                        Grid::make(3)->schema([
+                            TextInput::make('web_directory')
+                                ->required()
+                                ->maxLength(255)
+                                ->default('/public'),
+                            Select::make('php_version')
+                                ->searchable()
+                                ->default(PhpVersionsEnum::PHP84->value)
+                                ->options(collect(PhpVersionsEnum::cases())->mapWithKeys(fn($version) => [$version->value => $version->label()]))
+                                ->required(),
+                        ]),
+                        Group::make()->schema([
+                            Grid::make(3)->schema([
+                                Toggle::make('wildcard')
+                                    ->live()
+                                    ->afterStateUpdated(fn($set, $get) => $set('aliases', $get('domain') ? ['*.' . $get('domain')] : []))
+                                    ->required(),
+                                Toggle::make('isolation')
+                                    ->required(),
+                                Group::make()->schema([
+                                    Toggle::make('create_database')
+                                        ->live()
+                                        ->required(),
+                                    TextInput::make('database_name')
+                                        ->visible(fn($get) => $get('create_database'))
+                                        ->maxLength(255),
+                                ]),
+
+                            ]),
+
+                        ])->columnSpan(['lg' => 3]),
                     ]),
-
-                ]),
-
-            ])->columnSpan(['lg' => 3]),
-//            Wizard::make([
-//                Step::make('Server')
-//                    ->schema([
-//
-//                    ]),
-//                Step::make('Providers')
-//                    ->schema([
-//                        ToggleButtons::make('Providers')
-//                            ->dehydrated(false)
-//                            ->live()
-//                            ->hint('Connect additional source control providers in your')
-//                            ->hintAction(
-//                                Action::make('source_settings')
-//                                    ->label('Source settings.')
-//                                    ->url(ListSources::getUrl())
-//                            )
-//                            ->inline()
-//                            ->default('github')
-//                            ->view('components.custom-filament.Form.Inputs.toggle-buttons')
-//                            ->icons([
-//                                'github' => 'bi-github',
-//                                'custom' => 'bi-git',
-//                            ])
-//                            ->options([
-//                                'github' => 'Github',
-//                                'custom' => 'Custom',
-//                            ])
-//                    ]),
-//                Step::make('Repository')
-//                    ->schema([
-//                        Group::make([
-//                            Select::make('source')
-//                                ->live()
-//                                ->options(Source::pluck('app_name', 'id')),
-//                            Grid::make(3)->schema([
-//                                Select::make('repository')
-//                                    ->live()
-//                                    ->searchable()
-//                                    ->columnSpan(2)
-//                                    ->options(function ($get) {
-//                                        if ($get('source')) {
-//                                            Repository::setSource(Source::find($get('source')));
-//                                            return Repository::all()->pluck('name', 'id');
-//                                        }
-//                                        return [];
-//                                    }),
-//                                Select::make('branch')
-//                                    ->live()
-//                                    ->searchable()
-//                                    ->default('main')
-//                                    ->disabled(fn($get) => !$get('repository'))
-//                                    ->options(function ($get) {
-//                                        if ($get('repository')) {
-//                                            Repository::setSource(Source::find($get('source')));
-//                                            $repository = Repository::find($get('repository'));
-//                                            return (new GetRepositoryBranches($repository))->execute();
-//                                        }
-//                                        return [];
-//                                    }),
-//                            ])
-//                        ])->visible(false),
-//                        Group::make([
-//                            Grid::make(3)->schema([
-//                                TextInput::make('repository')
-//                                    ->live()
-//                                    ->required()
-//                                    ->columnSpan(2),
-//                                Select::make('branch')
-//                                    ->live()
-//                                    ->searchable()
-//                                    ->default('main')
-//                                    ->disabled(fn($get) => !$get('repository'))
-//                                    ->options(function ($get) {
-//                                        if ($get('repository')) {
-//                                            Repository::setSource(Source::find($get('source')));
-//                                            $repository = Repository::find($get('repository'));
-//                                            return (new GetRepositoryBranches($repository))->execute();
-//                                        }
-//                                        return [];
-//                                    }),
-//                            ])
-//                        ])->visible(true),
-//                    ])
-//            ])->columnSpanFull()->startOnStep(3),
-
-
+                Step::make('Providers')
+                    ->schema([
+                        ToggleButtons::make('Providers')
+                            ->dehydrated(false)
+                            ->live()
+                            ->hint('Connect additional source control providers in your')
+                            ->hintAction(
+                                Action::make('source_settings')
+                                    ->label('Source settings.')
+                                    ->url(ListSources::getUrl())
+                            )
+                            ->inline()
+                            ->default('github')
+                            ->view('components.custom-filament.Form.Inputs.toggle-buttons')
+                            ->icons([
+                                'github' => 'bi-github',
+                                'custom' => 'bi-git',
+                            ])
+                            ->options([
+                                'github' => 'Github',
+                                'custom' => 'Custom',
+                            ])
+                    ]),
+                Step::make('Repository')
+                    ->schema([
+                        Group::make([
+                            Select::make('source')
+                                ->live()
+                                ->options(Source::pluck('app_name', 'id')),
+                            Grid::make(3)->schema([
+                                Select::make('repository')
+                                    ->live()
+                                    ->searchable()
+                                    ->columnSpan(2)
+                                    ->options(function ($get) {
+                                        if ($get('source')) {
+                                            Repository::setSource(Source::find($get('source')));
+                                            return Repository::all()->pluck('name', 'id');
+                                        }
+                                        return [];
+                                    }),
+                                Select::make('branch')
+                                    ->live()
+                                    ->searchable()
+                                    ->default('main')
+                                    ->disabled(fn($get) => !$get('repository'))
+                                    ->options(function ($get) {
+                                        if ($get('repository')) {
+                                            Repository::setSource(Source::find($get('source')));
+                                            $repository = Repository::find($get('repository'));
+                                            return (new GetRepositoryBranches($repository))->execute();
+                                        }
+                                        return [];
+                                    }),
+                            ])
+                        ])->visible(fn($get) => $get('Providers') === 'github'),
+                        Group::make([
+                            Grid::make(3)->schema([
+                                TextInput::make('repository')
+                                    ->live()
+                                    ->required()
+                                    ->columnSpan(2),
+                                Select::make('branch')
+                                    ->live()
+                                    ->default('main')
+                                    ->disabled(fn($get) => !$get('repository'))
+                                    ->options(function ($get) {
+                                        $repository = $get('repository');
+                                        if ($repository) {
+                                            return (new GetBranchesFromRepoAction())->execute($repository);
+                                        }
+                                        return [];
+                                    }),
+                            ])
+                        ])->visible(fn($get) => $get('Providers') === 'custom'),
+                    ])
+            ])->columnSpanFull()
         ];
     }
 }

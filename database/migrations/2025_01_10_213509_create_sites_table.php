@@ -19,8 +19,6 @@ return new class extends Migration {
             $table->json('aliases')->nullable();
             $table->string('web_directory')->default('/public');
             $table->string('php_version');
-            $table->boolean('wildcard')->default(false);
-            $table->boolean('create_database')->default(false);
             $table->string('database_name')->nullable();
             $table->boolean('isolation')->default(false);
             $table->string('status')->default(\App\Enums\SiteStatus::Pending->value);
