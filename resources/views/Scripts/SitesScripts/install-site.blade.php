@@ -10,19 +10,19 @@ PHP_VERSION="{{$site->php_version}}"
 
 # Function to generate .env file content
 generate_env_content() {
-  local DB_DATABASE="{{$site->database_name}}"  #This might be empty
-  local DB_HOST="127.0.0.1"
-  local DB_PORT="3306"
-  local DB_USERNAME="laraship"
-  # DO NOT HARDCODE PASSWORD IN SCRIPT!
-  local DB_PASSWORD="FTr80vpftYO37LRu"
-  local APP_ENV="local"
-  local APP_DEBUG="true"  # CHANGE TO FALSE IN PRODUCTION
-  local laravel_version=$1
+local DB_DATABASE="{{$site->database_name}}"  #This might be empty
+local DB_HOST="127.0.0.1"
+local DB_PORT="3306"
+local DB_USERNAME="laraship"
+# DO NOT HARDCODE PASSWORD IN SCRIPT!
+local DB_PASSWORD="{{env('DB_PASSWORD')}}"
+local APP_ENV="local"
+local APP_DEBUG="true"  # CHANGE TO FALSE IN PRODUCTION
+local laravel_version=$1
 
-  local db_connection="mysql"
-  local db_vars=""
-  local app_vars="
+local db_connection="mysql"
+local db_vars=""
+local app_vars="
 APP_NAME=Laravel
 APP_ENV=$APP_ENV
 APP_KEY=
