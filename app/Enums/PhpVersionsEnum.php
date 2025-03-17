@@ -2,8 +2,14 @@
 
 namespace App\Enums;
 
+use App\Actions\PhpActions\ListPhpVersionsAction;
+use App\Traits\Enum;
+use Illuminate\Support\Facades\Cache;
+
 enum PhpVersionsEnum: string
 {
+    use Enum;
+
     case PHP84 = 'php8.4';
     case PHP83 = 'php8.3';
     case PHP82 = 'php8.2';
@@ -16,9 +22,18 @@ enum PhpVersionsEnum: string
     case PHP70 = 'php7.0';
     case PHP56 = 'php5.6';
 
+    public static function installed(): array
+    {
+        return Cache::remember('php_versions_installed', now()->addMinutes(60), function () {
+            return (new ListPhpVersionsAction())->execute();
+        });
+    }
+
+    //Version of PHP
+
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PHP84 => 'PHP 8.4',
             self::PHP83 => 'PHP 8.3',
             self::PHP82 => 'PHP 8.2',
@@ -33,10 +48,11 @@ enum PhpVersionsEnum: string
         };
     }
 
-    //Version of PHP
+    //installed php versions
+
     public function version(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PHP84 => '8.4',
             self::PHP83 => '8.3',
             self::PHP82 => '8.2',
@@ -51,5 +67,17 @@ enum PhpVersionsEnum: string
         };
     }
 
-    ///function that take model
+//    isInstalled
+    public function isInstalled(): bool
+    {
+        return in_array($this->value, self::installed(), true);
+    }
+
+    //is Default
+    public function isDefault(): bool
+    {
+        $php = shell_exec('php -v');
+        return str_contains($php, $this->version());
+    }
+
 }

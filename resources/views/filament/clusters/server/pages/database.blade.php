@@ -43,7 +43,6 @@
                 </x-custom-filament.table.header-cell>
             </x-slot>
             <x-slot name="body_cells">
-
                 @foreach($this->getDatabases() as $database)
 
                     <tr class="h-12 border-t border-gray-100 dark:border-gray-700">
