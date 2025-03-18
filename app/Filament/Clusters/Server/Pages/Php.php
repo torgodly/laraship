@@ -38,7 +38,7 @@ class Php extends Page implements HasActions
             ->label('Set as Default')
             ->requiresConfirmation()
             ->modalDescription(fn($arguments) => 'Are you sure you want to set ' . $arguments['php_label'] . ' as the default PHP version?')
-            ->modalIcon('heroicon-o-exclamation')
+            ->modalIcon('tabler-brand-php')
             ->action(function ($arguments) {
                 $setPhpVersionAsDefaultAction = new SetPhpVersionAsDefaultAction();
                 $output = $setPhpVersionAsDefaultAction->execute($arguments['php_version']);
