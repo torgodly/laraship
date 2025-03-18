@@ -3,7 +3,9 @@
 namespace App\Filament\Clusters\Server\Pages;
 
 use App\Actions\Common\UpdateFileContentAction;
+use App\Actions\PhpActions\InstallPhpAction;
 use App\Actions\PhpActions\SetPhpVersionAsDefaultAction;
+use App\Actions\PhpActions\UninstallPhpAction;
 use App\Actions\PhpActions\UpdatePhpIniFileAction;
 use App\Filament\Clusters\Server;
 use Filament\Actions\Action;
@@ -28,7 +30,18 @@ class Php extends Page implements HasActions
     //install php Action
     public function installPhpAction(): Action
     {
-        return Action::make('installPhp');
+        return Action::make('installPhp')
+            ->requiresConfirmation()
+            ->modalDescription(fn($arguments) => 'Are you sure you want to install ' . $arguments['php_label'] . '?')
+            ->modalIcon('tabler-brand-php')
+            ->action(function ($arguments) {
+                $installPhpAction = new InstallPhpAction();
+                $output = $installPhpAction->execute($arguments['php_version']);
+                Notification::make()
+                    ->title('PHP Installed')
+                    ->body($output)
+                    ->send();
+            });
     }
 
     //set as default php Action
@@ -49,11 +62,22 @@ class Php extends Page implements HasActions
             });
     }
 
-    //removePhpAction
-    public function removePhpAction(): Action
+    //uninstallPhpAction
+    public function uninstallPhpAction(): Action
     {
-        return Action::make('removePhp')
-            ->label('Remove');
+        return Action::make('uninstallPhp')
+            ->label('Uninstall')
+            ->requiresConfirmation()
+            ->modalDescription(fn($arguments) => 'Are you sure you want to uninstall ' . $arguments['php_label'] . '?')
+            ->modalIcon('tabler-brand-php')
+            ->action(function ($arguments) {
+                $uninstallPhpAction = new UninstallPhpAction();
+                $output = $uninstallPhpAction->execute($arguments['php_version']);
+                Notification::make()
+                    ->title('PHP Uninstalled')
+                    ->body($output)
+                    ->send();
+            });
     }
 
     //phpInfoAction
