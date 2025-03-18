@@ -80,4 +80,11 @@ enum PhpVersionsEnum: string
         return str_contains($php, $this->version());
     }
 
+    //get ini path
+    public function getIniPath(): string
+    {
+        return shell_exec($this->value . ' -r "echo php_ini_loaded_file();"');
+//        return shell_exec( 'php83 -r "echo php_ini_loaded_file();"');
+    }
+
 }

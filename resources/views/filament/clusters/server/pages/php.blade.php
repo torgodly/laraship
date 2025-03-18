@@ -73,7 +73,29 @@
                             {{($this->patchPhpAction)(['version' => $php->value])}}
                         </x-custom-filament.table.cell>
                         <x-custom-filament.table.cell class="">
-                            {{($this->installPhpAction)(['version' => $php->value])}}
+                            @if(!$php->isDefault())
+                                {{($this->installPhpAction)(['version' => $php->value])}}
+                            @else
+                                <div>
+                                    <x-filament-actions::group
+                                        :actions="[
+                                        $this->setAsDefaultPhpAction,
+                                        $this->removePhpAction,
+                                        $this->phpInfoAction,
+                                        $this->phpExtensionsAction,
+                                        ($this->editPhpIniAction)(['php_label' => $php->label(), 'ini_path' => $php->getIniPath()]),
+                                        $this->phpFpmConfigAction,
+                                        $this->phpFpmRestartAction,
+                                    ]"
+                                        label="Actions"
+                                        icon="heroicon-m-ellipsis-vertical"
+                                        color="primary"
+                                        tooltip="More actions"
+                                    />
+
+                                    <x-filament-actions::modals/>
+                                </div>
+                            @endif
                         </x-custom-filament.table.cell>
 
                     </tr>
