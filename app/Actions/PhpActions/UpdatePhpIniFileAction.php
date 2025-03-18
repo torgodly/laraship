@@ -10,13 +10,13 @@ class UpdatePhpIniFileAction
         $escaped_content = escapeshellarg($content);
 
         // Build the command to write to the file using sudo
-        $command = "echo $escaped_content | sudo tee $config_path > /dev/null";
+        $command = "echo $escaped_content | sudo tee $config_path > /dev/null 2>&1";
 
-        // Execute the command
-        $output = shell_exec($command);
+        // Execute the command and capture the return code
+        exec($command, $output, $return_var);
 
-        // Check for errors
-        if ($output === null) {
+        // Check if the command executed successfully (return code 0 means success)
+        if ($return_var !== 0) {
             return "Failed to update the php.ini file.";
         }
 
