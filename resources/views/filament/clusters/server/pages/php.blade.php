@@ -73,14 +73,14 @@
                             {{($this->patchPhpAction)(['version' => $php->value])}}
                         </x-custom-filament.table.cell>
                         <x-custom-filament.table.cell class="">
-                            @if(!$php->isDefault())
+                            @if(!$php->isInstalled())
                                 {{($this->installPhpAction)(['version' => $php->value])}}
                             @else
                                 <div>
                                     <x-filament-actions::group
                                         :actions="[
-                             /*           $this->setAsDefaultPhpAction,
-                                        $this->removePhpAction,
+                                        ($this->setAsDefaultPhpAction)(['php_label' => $php->label(), 'php_version' => $php->value]),
+                            /*            $this->removePhpAction,
                                         $this->phpInfoAction,
                                         $this->phpExtensionsAction,*/
                                         ($this->editPhpCliConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getCliConfigPath()]),

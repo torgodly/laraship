@@ -3,6 +3,7 @@
 namespace App\Filament\Clusters\Server\Pages;
 
 use App\Actions\Common\UpdateFileContentAction;
+use App\Actions\PhpActions\SetPhpVersionAsDefaultAction;
 use App\Actions\PhpActions\UpdatePhpIniFileAction;
 use App\Filament\Clusters\Server;
 use Filament\Actions\Action;
@@ -34,7 +35,18 @@ class Php extends Page implements HasActions
     public function setAsDefaultPhpAction(): Action
     {
         return Action::make('setAsDefaultPhp')
-            ->label('Set as Default');
+            ->label('Set as Default')
+            ->requiresConfirmation()
+            ->modalDescription(fn($arguments) => 'Are you sure you want to set ' . $arguments['php_label'] . ' as the default PHP version?')
+            ->modalIcon('heroicon-o-exclamation')
+            ->action(function ($arguments) {
+                $setPhpVersionAsDefaultAction = new SetPhpVersionAsDefaultAction();
+                $output = $setPhpVersionAsDefaultAction->execute($arguments['php_version']);
+                Notification::make()
+                    ->title('PHP Version Set as Default')
+                    ->body($output)
+                    ->send();
+            });
     }
 
     //removePhpAction
@@ -63,6 +75,7 @@ class Php extends Page implements HasActions
     public function editPhpFpmConfigAction(): Action
     {
         return Action::make('editPhpFpmConfig')
+            ->label('Edit FPM Configuration')
             ->fillForm(function ($arguments) {
                 return [
                     'config_content' => file_get_contents($arguments['config_path']),
@@ -90,6 +103,7 @@ class Php extends Page implements HasActions
     public function editPhpCliConfigAction(): Action
     {
         return Action::make('editPhpCliConfig')
+            ->label('Edit CLI Configuration')
             ->fillForm(function ($arguments) {
                 return [
                     'config_content' => file_get_contents($arguments['config_path']),
