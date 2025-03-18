@@ -81,10 +81,13 @@ enum PhpVersionsEnum: string
     }
 
     //get ini path
-    public function getIniPath(): string
+    public function getCliConfigPath(): string
     {
         return shell_exec($this->value . ' -r "echo php_ini_loaded_file();"');
-//        return shell_exec( 'php83 -r "echo php_ini_loaded_file();"');
     }
-
+    //get FPM Configuration Path
+    public function getFpmConfigPath(): string
+    {
+        return '/etc/php/' . $this->version() . '/fpm/php-fpm.conf';
+    }
 }

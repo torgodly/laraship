@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Actions\PhpActions;
+namespace App\Actions\Common;
 
-class UpdatePhpIniFileAction
+class UpdateFileContentAction
 {
     public function execute(string $config_path, string $content): string
     {
@@ -17,9 +17,9 @@ class UpdatePhpIniFileAction
 
         // Check if the command executed successfully (return code 0 means success)
         if ($return_var !== 0) {
-            return "Failed to update the php.ini file.";
+            return "Failed to update the" . basename($config_path) . "file.";
         }
 
-        return "php.ini file updated successfully.";
+        return basename($config_path) . " file updated successfully.";
     }
 }

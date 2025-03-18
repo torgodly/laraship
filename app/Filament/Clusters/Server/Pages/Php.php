@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Server\Pages;
 
+use App\Actions\Common\UpdateFileContentAction;
 use App\Actions\PhpActions\UpdatePhpIniFileAction;
 use App\Filament\Clusters\Server;
 use Filament\Actions\Action;
@@ -57,38 +58,59 @@ class Php extends Page implements HasActions
             ->label('Extensions');
     }
 
-    //editPhpIniAction
-    public function editPhpIniAction(): Action
+
+    //EditphpFpmConfigAction
+    public function editPhpFpmConfigAction(): Action
     {
-        return Action::make('editPhpIni')
+        return Action::make('editPhpFpmConfig')
             ->fillForm(function ($arguments) {
                 return [
-                    'php_ini' => file_get_contents($arguments['ini_path']),
+                    'config_content' => file_get_contents($arguments['config_path']),
                 ];
             })
-            ->modalHeading(fn($arguments) => 'Edit ' . $arguments['php_label'] . ' ini Configuration')
+            ->modalHeading(fn($arguments) => 'Edit ' . $arguments['php_label'] . ' FPM Configuration')
             ->form([
-                AceEditor::make('php_ini')
+                AceEditor::make('config_content')
                     ->hiddenLabel()
                     ->height('48rem')
                     ->mode('ini')
                     ->theme('dracula'),
             ])
             ->action(function ($data, $arguments) {
-                $updatePhpIniFileAction = new UpdatePhpIniFileAction();
-                $output = $updatePhpIniFileAction->execute($arguments['ini_path'], $data['php_ini']);
+                $updatePhpIniFileAction = new UpdateFileContentAction();
+                $output = $updatePhpIniFileAction->execute($arguments['config_path'], $data['config_content']);
                 Notification::make()
-                    ->title('PHP ini Configuration Updated')
+                    ->title('PHP FPM Configuration Updated')
                     ->body($output)
                     ->send();
             });
     }
 
-    //phpFpmConfigAction
-    public function phpFpmConfigAction(): Action
+    //EditphpCliConfigAction
+    public function editPhpCliConfigAction(): Action
     {
-        return Action::make('phpFpmConfig')
-            ->label('FPM Config');
+        return Action::make('editPhpCliConfig')
+            ->fillForm(function ($arguments) {
+                return [
+                    'config_content' => file_get_contents($arguments['config_path']),
+                ];
+            })
+            ->modalHeading(fn($arguments) => 'Edit ' . $arguments['php_label'] . ' CLI Configuration')
+            ->form([
+                AceEditor::make('config_content')
+                    ->hiddenLabel()
+                    ->height('48rem')
+                    ->mode('ini')
+                    ->theme('dracula'),
+            ])
+            ->action(function ($data, $arguments) {
+                $updatePhpIniFileAction = new UpdateFileContentAction();
+                $output = $updatePhpIniFileAction->execute($arguments['config_path'], $data['config_content']);
+                Notification::make()
+                    ->title('PHP CLI Configuration Updated')
+                    ->body($output)
+                    ->send();
+            });
     }
 
     //phpFpmRestartAction

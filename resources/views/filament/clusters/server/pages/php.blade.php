@@ -79,13 +79,13 @@
                                 <div>
                                     <x-filament-actions::group
                                         :actions="[
-                                        $this->setAsDefaultPhpAction,
+                             /*           $this->setAsDefaultPhpAction,
                                         $this->removePhpAction,
                                         $this->phpInfoAction,
-                                        $this->phpExtensionsAction,
-                                        ($this->editPhpIniAction)(['php_label' => $php->label(), 'ini_path' => $php->getIniPath()]),
-                                        $this->phpFpmConfigAction,
-                                        $this->phpFpmRestartAction,
+                                        $this->phpExtensionsAction,*/
+                                        ($this->editPhpCliConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getCliConfigPath()]),
+                                        ($this->editPhpFpmConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getFpmConfigPath()]),
+                                        /*$this->phpFpmRestartAction,*/
                                     ]"
                                         label="Actions"
                                         icon="heroicon-m-ellipsis-vertical"
