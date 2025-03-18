@@ -2,6 +2,7 @@
 
 namespace App\Filament\Clusters\Server\Pages;
 
+use App\Actions\PhpActions\UpdatePhpIniFileAction;
 use App\Filament\Clusters\Server;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -74,7 +75,8 @@ class Php extends Page implements HasActions
                     ->theme('dracula'),
             ])
             ->action(function ($data, $arguments) {
-                file_put_contents($arguments['ini_path'], $data['php_ini']);
+                $updatePhpIniFileAction = new UpdatePhpIniFileAction();
+                $updatePhpIniFileAction->execute($arguments['ini_path'], $data['php_ini']);
                 Notification::make()
                     ->title('PHP ini Configuration Updated')
                     ->body('The PHP ini configuration has been updated.')
