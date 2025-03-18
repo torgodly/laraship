@@ -88,6 +88,8 @@ enum PhpVersionsEnum: string
     //get FPM Configuration Path
     public function getFpmConfigPath(): string
     {
+        //maybe in the future we will have different paths for different versions so we are gonna use the command
+        // php-fpm8.4 -i | grep "Loaded Configuration File" | awk -F" => " '{print $2}'
         return '/etc/php/' . $this->version() . '/fpm/php.ini';
     }
 
