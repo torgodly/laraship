@@ -71,7 +71,7 @@ class Php extends Page implements HasActions
                 AceEditor::make('php_ini')
                     ->hiddenLabel()
                     ->height('48rem')
-                    ->mode('php')
+                    ->mode('ini')
                     ->theme('dracula'),
             ])
             ->action(function ($data, $arguments) {
