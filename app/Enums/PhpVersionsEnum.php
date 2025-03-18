@@ -88,6 +88,7 @@ enum PhpVersionsEnum: string
     //get FPM Configuration Path
     public function getFpmConfigPath(): string
     {
-        return '/etc/php/' . $this->version() . '/fpm/php-fpm.conf';
+        return '/etc/php/' . $this->version() . '/fpm/php.ini';
     }
+
 }
