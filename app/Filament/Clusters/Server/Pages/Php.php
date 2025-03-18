@@ -76,10 +76,11 @@ class Php extends Page implements HasActions
             ])
             ->action(function ($data, $arguments) {
                 $updatePhpIniFileAction = new UpdatePhpIniFileAction();
-                $updatePhpIniFileAction->execute($arguments['ini_path'], $data['php_ini']);
+                $output = $updatePhpIniFileAction->execute($arguments['ini_path'], $data['php_ini']);
                 Notification::make()
                     ->title('PHP ini Configuration Updated')
-                    ->body('The PHP ini configuration has been updated.')
+//                    ->body('The PHP ini configuration has been updated.')
+                    ->body($output)
                     ->send();
             });
     }
