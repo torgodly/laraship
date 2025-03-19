@@ -3,6 +3,7 @@
 namespace App\Actions\PhpActions;
 
 use App\Services\ShellScriptService;
+use Illuminate\Support\Facades\Cache;
 
 class InstallPhpAction
 {
@@ -19,7 +20,9 @@ class InstallPhpAction
 
         try {
             $output = $this->shellService->runScript($shell_script);
-            return $version.'installed successfully.';
+            //clear cache
+            Cache::forget('php_versions_installed');
+            return $version.' installed successfully.';
         } catch (\Exception $e) {
            return 'Failed to install '.$version;
         }

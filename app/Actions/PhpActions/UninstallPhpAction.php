@@ -3,6 +3,7 @@
 namespace App\Actions\PhpActions;
 
 use App\Services\ShellScriptService;
+use Illuminate\Support\Facades\Cache;
 
 class UninstallPhpAction
 {
@@ -20,7 +21,9 @@ class UninstallPhpAction
 
         try {
             $output = $this->shellService->runScript($shell_script);
-            return $version . 'uninstalled successfully.';
+            // Clear the cache
+            Cache::forget('php_versions_installed');
+            return $version . ' uninstalled successfully.';
         } catch (\Exception $e) {
             return 'Failed to uninstall ' . $version;
         }
