@@ -15,7 +15,7 @@ class InstallPhpAction
 
     public function execute(string $version): string
     {
-        $shell_script = view('Scripts.phpScripts.install-php-version', ['version' => $version])->render();
+        $shell_script = view('Scripts.phpScripts.install-php-version', ['php_version' => $version])->render();
 
         try {
             $output = $this->shellService->runScript($shell_script);
