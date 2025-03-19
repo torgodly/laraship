@@ -70,7 +70,7 @@
                         @endif
 
                         <x-custom-filament.table.cell class="">
-                            {{($this->patchPhpAction)(['php_version' => $php->value, 'php_label' => $php->label()])}}
+                            {{($this->updatePhpAction)(['php_version' => $php->value, 'php_label' => $php->label()])}}
                         </x-custom-filament.table.cell>
                         <x-custom-filament.table.cell class="">
                             @if(!$php->isInstalled())
