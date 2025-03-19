@@ -160,10 +160,20 @@ class Php extends Page implements HasActions
 
 
     //patch php Action
-    public function patchPhpAction(): Action
+    public function updatePhpAction(): Action
     {
-        return Action::make('patchPhp')
-            ->label('Patch')
-            ->link();
+        return Action::make('updatePhp')
+            ->label('Update')
+            ->requiresConfirmation()
+            ->modalDescription(fn($arguments) => 'Are you sure you want to update ' . $arguments['php_label'] . '?')
+            ->modalIcon('tabler-brand-php')
+            ->action(function ($arguments) {
+                $installPhpAction = new InstallPhpAction();
+                $output = $installPhpAction->execute($arguments['php_version']);
+                Notification::make()
+                    ->title('PHP Updated')
+                    ->body($output)
+                    ->send();
+            });
     }
 }
