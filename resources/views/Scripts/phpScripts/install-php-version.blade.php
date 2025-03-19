@@ -1,4 +1,4 @@
-@props(['php_version'])
+@props(['php_version', 'php_version_number'])
 apt-get install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y --force-yes \
 {{$php_version}}-fpm {{$php_version}}-cli {{$php_version}}-dev \
 {{$php_version}}-pgsql {{$php_version}}-sqlite3 {{$php_version}}-gd {{$php_version}}-curl \
