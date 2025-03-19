@@ -184,7 +184,7 @@ class Php extends Page implements HasActions
     public function phpFpmReloadAction(): Action
     {
         return Action::make('phpFpmReload')
-            ->label('Restart FPM')
+            ->label('Reload FPM')
             ->requiresConfirmation()
             ->modalDescription(fn($arguments) => 'Are you sure you want to restart' . $arguments['php_label'] . 'FPM?')
             ->modalIcon('tabler-brand-php')
