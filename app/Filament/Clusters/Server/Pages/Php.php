@@ -4,6 +4,7 @@ namespace App\Filament\Clusters\Server\Pages;
 
 use App\Actions\Common\UpdateFileContentAction;
 use App\Actions\PhpActions\InstallPhpAction;
+use App\Actions\PhpActions\ReloadPhpFpmAction;
 use App\Actions\PhpActions\SetPhpVersionAsDefaultAction;
 use App\Actions\PhpActions\UninstallPhpAction;
 use App\Actions\PhpActions\UpdatePhpIniFileAction;
@@ -180,10 +181,21 @@ class Php extends Page implements HasActions
     }
 
     //phpFpmRestartAction
-    public function phpFpmRestartAction(): Action
+    public function phpFpmReloadAction(): Action
     {
-        return Action::make('phpFpmRestart')
-            ->label('Restart FPM');
+        return Action::make('phpFpmReload')
+            ->label('Restart FPM')
+            ->requiresConfirmation()
+            ->modalDescription(fn($arguments) => 'Are you sure you want to restart' . $arguments['php_label'] . 'FPM?')
+            ->modalIcon('tabler-brand-php')
+            ->action(function ($arguments) {
+                $reloadPhpFpmAction = new ReloadPhpFpmAction();
+                $output = $reloadPhpFpmAction->execute($arguments['php_version']);
+                Notification::make()
+                    ->title('PHP-FPM Reloaded')
+                    ->body($output)
+                    ->send();
+            });
     }
 
 

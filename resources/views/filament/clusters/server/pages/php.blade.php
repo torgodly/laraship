@@ -85,7 +85,7 @@
                                         ($this->editPhpCliConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getCliConfigPath()]),
                                         ($this->editPhpFpmConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getFpmConfigPath()]),
                                         ($this->editPhpPoolConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getFpmPoolPath()]),
-                                        $this->phpFpmRestartAction,
+                                        ($this->phpFpmReloadAction)(['php_label' => $php->label(), 'php_version' => $php->value]),
                                         ($this->uninstallPhpAction)(['php_label' => $php->label(), 'php_version' => $php->value]),
 
                                     ]"
