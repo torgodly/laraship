@@ -93,5 +93,10 @@ enum PhpVersionsEnum: string
         // php-fpm8.4 -i | grep "Loaded Configuration File" | awk -F" => " '{print $2}'
         return '/etc/php/' . $this->version() . '/fpm/php.ini';
     }
+    //get FPM Pool Path
+    public function getFpmPoolPath(): string
+    {
+        return '/etc/php/' . $this->version() . '/fpm/pool.d/www.conf';
+    }
 
 }

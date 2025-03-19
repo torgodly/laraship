@@ -151,6 +151,34 @@ class Php extends Page implements HasActions
             });
     }
 
+    //edit php pool config Action
+    public function editPhpPoolConfigAction(): Action
+    {
+        return Action::make('editPhpPoolConfig')
+            ->label('Edit Pool Configuration')
+            ->fillForm(function ($arguments) {
+                return [
+                    'config_content' => file_get_contents($arguments['config_path']),
+                ];
+            })
+            ->modalHeading(fn($arguments) => 'Edit ' . $arguments['php_label'] . ' Pool Configuration')
+            ->form([
+                AceEditor::make('config_content')
+                    ->hiddenLabel()
+                    ->height('48rem')
+                    ->mode('ini')
+                    ->theme('dracula'),
+            ])
+            ->action(function ($data, $arguments) {
+                $updatePhpIniFileAction = new UpdateFileContentAction();
+                $output = $updatePhpIniFileAction->execute($arguments['config_path'], $data['config_content']);
+                Notification::make()
+                    ->title('PHP Pool Configuration Updated')
+                    ->body($output)
+                    ->send();
+            });
+    }
+
     //phpFpmRestartAction
     public function phpFpmRestartAction(): Action
     {
