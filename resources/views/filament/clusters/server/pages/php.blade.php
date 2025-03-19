@@ -80,12 +80,13 @@
                                     <x-filament-actions::group
                                         :actions="[
                                         ($this->setAsDefaultPhpAction)(['php_label' => $php->label(), 'php_version' => $php->value]),
-                                        ($this->uninstallPhpAction)(['php_label' => $php->label(), 'php_version' => $php->value]),
                                 /*        $this->phpInfoAction,
                                         $this->phpExtensionsAction,*/
                                         ($this->editPhpCliConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getCliConfigPath()]),
                                         ($this->editPhpFpmConfigAction)(['php_label' => $php->label(), 'config_path' => $php->getFpmConfigPath()]),
                                         /*$this->phpFpmRestartAction,*/
+                                        ($this->uninstallPhpAction)(['php_label' => $php->label(), 'php_version' => $php->value]),
+
                                     ]"
                                         label="Actions"
                                         icon="heroicon-m-ellipsis-vertical"

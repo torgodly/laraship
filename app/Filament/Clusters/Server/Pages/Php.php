@@ -165,6 +165,7 @@ class Php extends Page implements HasActions
         return Action::make('updatePhp')
             ->label('Update')
             ->requiresConfirmation()
+            ->link()
             ->modalDescription(fn($arguments) => 'Are you sure you want to update ' . $arguments['php_label'] . '?')
             ->modalIcon('tabler-brand-php')
             ->action(function ($arguments) {
